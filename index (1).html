@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>সালথা সংবাদ | সত্যের পথে, মানুষের পাশে।</title>
+<link href="https://fonts.googleapis.com/css2?family=Anek+Bangla:wght@800&family=Hind+Siliguri:wght@400;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com/3.4.17"></script>
+<style>
+body{font-family:'Hind Siliguri',sans-serif;background:#f4f5f7;color:#171717;margin:0}
+.mh{font-family:'Anek Bangla',sans-serif}
+.no-sb::-webkit-scrollbar{display:none}
+.mq{display:inline-block;white-space:nowrap;padding-left:100%;animation:mq 25s linear infinite}@keyframes mq{to{transform:translateX(-100%)}}
+@media print{nav,#adtop,#r-share,#cm,#r-rel,footer,#adm-fab{display:none!important}}
+</style>
+</head>
+<body>
+
+<div id="pub">
+  <div id="demo" class="hidden bg-yellow-100 text-yellow-900 text-xs text-center py-1">⚠ ডেমো প্রিভিউ — ডাটাবেস সংযুক্ত নয়, নমুনা খবর দেখানো হচ্ছে (আসল সাইটে আপনার খবর আসবে)</div>
+  <div class="bg-white border-b text-xs px-4 py-2 flex justify-between items-center text-gray-600">
+    <span>📅 <span id="dt"></span> | <b class="text-[#123B63]">ফরিদপুর জেলা সংস্করণ</b></span>
+    <input id="q" oninput="search(this.value)" placeholder="🔍 খুঁজুন" class="border rounded-full px-3 py-1 w-32 text-xs">
+  </div>
+  <header class="bg-white py-4 text-center border-b">
+    <a href="#" onclick="home();return false" class="inline-block">
+      <h1 class="mh text-5xl md:text-6xl leading-none"><span class="text-[#D71920]">সালথা</span> সংবাদ</h1>
+      <p class="text-sm font-bold text-[#123B63] mt-1">সত্যের পথে, মানুষের পাশে।</p>
+    </a>
+  </header>
+  <nav class="bg-[#123B63] text-white sticky top-0 z-30 shadow"><div id="cats" class="max-w-6xl mx-auto flex gap-1 overflow-x-auto no-sb px-3 py-1 text-sm font-semibold"></div></nav>
+  <div class="bg-[#171717] text-white flex items-center h-10 px-3 text-sm">
+    <span class="bg-[#D71920] px-2 py-1 text-xs font-bold shrink-0 z-10">🔥 ব্রেকিং</span>
+    <div class="flex-1 overflow-hidden"><span id="ticker" class="mq font-semibold"></span></div>
+  </div>
+  <div id="adtop" class="max-w-6xl mx-auto px-4 mt-3"></div>
+  <main class="max-w-6xl mx-auto p-4">
+    <div id="hm"></div>
+    <article id="reader" class="hidden max-w-3xl mx-auto bg-white p-5 rounded-xl border">
+      <p class="text-xs text-gray-500"><a href="#" onclick="home();return false" class="text-[#D71920] font-bold">প্রচ্ছদ</a> › <span id="r-cat"></span></p>
+      <h1 id="r-title" class="text-2xl md:text-3xl font-extrabold mt-2 leading-snug"></h1>
+      <div class="flex gap-3 items-center my-4 py-3 border-y">
+        <div class="w-14 h-14 rounded-full border-2 border-black flex items-center justify-center mh text-2xl shrink-0">স</div>
+        <div><p id="r-by" class="font-bold text-green-700"></p><p id="r-time" class="text-sm text-[#0b6a8a]"></p></div>
+      </div>
+      <p class="text-sm text-gray-600 mb-2">শেয়ার করুন :</p>
+      <div id="r-share" class="flex flex-wrap gap-2 pb-4 border-b mb-4"></div>
+      <div id="r-vid"></div><img id="r-img" class="hidden w-full rounded-lg mb-4">
+      <div id="r-body" class="text-[17px] leading-8"></div>
+      <div id="r-rel" class="mt-8"></div>
+      <div id="cm" class="mt-8 pt-4 border-t"></div>
+    </article>
+  </main>
+  <footer class="bg-[#171717] text-center text-gray-400 text-xs py-8 border-t-4 border-[#D71920] mt-6">
+    <div id="flogo" onclick="tapLogo()" class="mh text-3xl text-white select-none"><span class="text-[#D71920]">সালথা</span> সংবাদ</div>
+    <p class="text-red-500 font-bold mt-1">সত্যের পথে, মানুষের পাশে।</p>
+    <p id="fed" class="mt-3"></p><p id="ft" class="mt-1"></p>
+  </footer>
+  <button id="adm-fab" onclick="go('admin')" class="hidden fixed bottom-4 right-4 z-40 bg-[#123B63] text-white px-4 py-2 rounded-full shadow-lg text-sm font-bold">⚙️ প্যানেল</button>
+</div>
+
+<div id="login" class="hidden min-h-screen bg-[#0b0f19] flex items-center justify-center p-4">
+  <form onsubmit="doLogin(event)" class="bg-[#111827] border border-gray-800 rounded-3xl w-full max-w-md p-7 space-y-4 text-sm text-white">
+    <div class="text-center">
+      <div class="mh text-3xl"><span class="text-[#D71920]">সালথা</span> সংবাদ</div>
+      <p class="text-xs text-gray-400 mt-1">সুরক্ষিত অ্যাডমিন কন্ট্রোল প্যানেল</p>
+    </div>
+    <p id="err" class="hidden bg-red-950 border border-red-500/50 text-red-200 p-2 rounded-xl text-xs"></p>
+    <div><label class="text-xs text-gray-300">ইমেইল</label>
+      <input id="em" type="email" required class="w-full mt-1 px-3 py-2 bg-[#1a2333] border border-gray-700 rounded-xl"></div>
+    <div><label class="text-xs text-gray-300">পাসওয়ার্ড</label>
+      <input id="pw" type="password" required class="w-full mt-1 px-3 py-2 bg-[#1a2333] border border-gray-700 rounded-xl"></div>
+    <button class="w-full py-3 bg-[#D71920] rounded-xl font-bold">প্রবেশ করুন</button>
+    <button type="button" onclick="resetPw(document.getElementById('em').value)" class="w-full text-xs text-amber-400">পাসওয়ার্ড ভুলে গেছেন / বদলাতে চান?</button>
+    <button type="button" onclick="go('pub')" class="w-full text-xs text-gray-400">← মূল ওয়েবসাইটে ফিরুন</button>
+  </form>
+</div>
+
+<div id="admin" class="hidden min-h-screen bg-[#0b0f19] text-gray-100">
+  <header class="bg-[#111827] border-b border-gray-800 px-4 py-3 flex justify-between items-center sticky top-0 z-30">
+    <b class="mh text-lg">সালথা সংবাদ <span class="text-[10px] text-red-400 border border-red-500/40 px-1.5 rounded">ADMIN</span></b>
+    <div class="flex gap-2 text-xs">
+      <button onclick="resetPw()" class="bg-gray-800 px-3 py-1.5 rounded-lg">🔑 পাসওয়ার্ড</button>
+      <button onclick="go('pub')" class="bg-gray-800 px-3 py-1.5 rounded-lg">🌐 সাইট</button>
+      <button onclick="logout()" class="bg-gray-800 px-3 py-1.5 rounded-lg">লগআউট</button>
+    </div>
+  </header>
+  <div class="flex gap-1 overflow-x-auto no-sb p-3 text-xs font-semibold" id="tabs"></div>
+  <div id="tab" class="p-4 max-w-4xl mx-auto space-y-4"></div>
+</div>
+
+<script type="module">
+let initializeApp,getAuth,signInWithEmailAndPassword,signOut,onAuthStateChanged,sendPasswordResetEmail,getFirestore,doc,getDoc,setDoc,updateDoc,deleteDoc,onSnapshot,collection,query,where,DEMO=false;
+try{
+  const B='https://www.gstatic.com/firebasejs/10.14.1/';
+  const [fa,fb,fc]=await Promise.all([import(B+'firebase-app.js'),import(B+'firebase-auth.js'),import(B+'firebase-firestore.js')]);
+  ({initializeApp}=fa);({getAuth,signInWithEmailAndPassword,signOut,onAuthStateChanged,sendPasswordResetEmail}=fb);({getFirestore,doc,getDoc,setDoc,updateDoc,deleteDoc,onSnapshot,collection,query,where}=fc);
+}catch(e){DEMO=true}
+
+const ADMIN_EMAIL='junayedahmad5003@gmail.com';
+let auth,db;
+if(!DEMO){const app=initializeApp({
+  apiKey:"AIzaSyABKCOjZnTu6155-eho8aqdGVkaxX1oVHw",
+  authDomain:"saltha-sangbad.firebaseapp.com",
+  projectId:"saltha-sangbad",
+  appId:"1:91800137977:web:ba30064469389f181d3228"
+});auth=getAuth(app);db=getFirestore(app)}
+
+const bn=n=>String(n).replace(/\d/g,d=>'০১২৩৪৫৬৭৮৯'[d]);
+const $=i=>document.getElementById(i);
+const esc=s=>{const d=document.createElement('div');d.textContent=s;return d.innerHTML};
+const CATS=['সালথা','ফরিদপুর','বাংলাদেশ','রাজনীতি','কৃষি ও অর্থনীতি'];
+let S={ticker:'সালথা সংবাদে স্বাগতম',news:[]},CM=[],IS_ADMIN=false,cur=null,curCat='প্রচ্ছদ',unCm=null,loaded=false;
+function fix(){S.ads=S.ads||{on:true,code:''};S.rep=S.rep||[];S.seo=S.seo||{title:'',desc:'',phone:'',addr:''};S.news=S.news||[]}
+fix();
+$('dt').textContent=new Date().toLocaleDateString('bn-BD',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+
+function save(){
+  if(!IS_ADMIN)return;
+  setDoc(doc(db,'site','state'),{json:JSON.stringify(S)}).catch(()=>alert('সেভ করা যায়নি'));
+}
+function go(v){['pub','login','admin'].forEach(x=>$(x).classList.toggle('hidden',x!==v));window.scrollTo(0,0);if(v==='admin')tab('dash')}
+function openAdmin(){IS_ADMIN?go('admin'):go('login')}
+const MN=['জানুয়ারি','ফেব্রুয়ারি','মার্চ','এপ্রিল','মে','জুন','জুলাই','আগস্ট','সেপ্টেম্বর','অক্টোবর','নভেম্বর','ডিসেম্বর'],DN=['রবিবার','সোমবার','মঙ্গলবার','বুধবার','বৃহস্পতিবার','শুক্রবার','শনিবার'];
+function fd(ts,full){if(!ts)return '';const d=new Date(ts);let h=d.getHours();const m=String(d.getMinutes()).padStart(2,'0'),ap=h<12?'পূর্বাহ্ণ':'অপরাহ্ণ';h=h%12||12;return (full?DN[d.getDay()]+', ':'')+bn(d.getDate())+' '+MN[d.getMonth()]+', '+bn(d.getFullYear())+(full?', '+bn(h)+':'+bn(m)+' '+ap:'')}
+const thumb=n=>n.im?'<img data-im="'+n.im+'" class="w-full h-full object-cover bg-gray-200">':(n.i&&/^https:\/\//.test(n.i)?'<img src="'+esc(n.i)+'" loading="lazy" class="w-full h-full object-cover">':'');
+const latest=()=>S.news.slice().sort((a,b)=>(b.ts||0)-(a.ts||0)||b.id-a.id);
+function card(n,big){
+  const t=thumb(n);
+  return '<a href="#n'+n.id+'" class="block group">'+(t?'<div class="'+(big?'aspect-video':'aspect-[16/10]')+' overflow-hidden rounded-lg mb-2">'+t+'</div>':'')+'<h3 class="font-bold leading-snug group-hover:text-[#D71920] '+(big?'text-2xl md:text-3xl':'text-base')+'">'+esc(n.t)+'</h3>'+(big?'<p class="text-sm text-gray-600 mt-2">'+esc(n.b.slice(0,160))+'...</p>':'')+'<p class="text-xs text-gray-400 mt-1">'+fd(n.ts)+'</p></a>';
+}
+function row(n){const t=thumb(n);return '<a href="#n'+n.id+'" class="flex gap-3 py-2 border-b group">'+(t?'<div class="w-20 h-14 shrink-0 rounded overflow-hidden">'+t+'</div>':'')+'<span class="text-sm font-semibold leading-snug group-hover:text-[#D71920]">'+esc(n.t)+'</span></a>'}
+const sec=(t,l)=>'<section class="mt-8"><h2 class="border-b-2 border-[#D71920] mb-3"><span class="bg-[#D71920] text-white px-3 py-1 inline-block font-bold">'+esc(t)+'</span></h2><div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">'+l.map(n=>card(n)).join('')+'</div></section>';
+function sideTab(k){
+  const l=(k==='p'?S.news.slice().sort((a,b)=>b.v-a.v):latest()).slice(0,8);
+  ['l','p'].forEach(x=>{const b=$('sd'+x);if(b)b.className='flex-1 py-2 font-bold text-sm '+(x===k?'bg-[#D71920] text-white':'bg-gray-200')});
+  if($('sd')){$('sd').innerHTML=l.map(row).join('');fillImgs()}
+}
+function home(cat){
+  if(cat)curCat=cat;cur=null;$('q').value='';
+  if(location.hash.startsWith('#n'))history.replaceState(null,'',location.pathname);
+  document.title=S.seo.title||'সালথা সংবাদ | সত্যের পথে, মানুষের পাশে।';
+  $('reader').classList.add('hidden');$('hm').classList.remove('hidden');
+  $('ticker').textContent=S.ticker;
+  $('fed').textContent=S.seo.ed?'সম্পাদক ও প্রকাশক : '+S.seo.ed:'';
+  $('ft').textContent='© ২০২৬ সালথা সংবাদ। সর্বস্বত্ব সংরক্ষিত।'+(S.seo.phone?' ফোন: '+S.seo.phone:'')+(S.seo.addr?' | '+S.seo.addr:'');
+  const ad=$('adtop');ad.innerHTML='';
+  if(S.ads.on&&S.ads.code){const f=document.createElement('iframe');f.style.cssText='width:100%;height:100px;border:0';f.setAttribute('sandbox','allow-scripts allow-popups');f.srcdoc=S.ads.code;ad.appendChild(f)}
+  $('cats').innerHTML=['প্রচ্ছদ'].concat(CATS).map(c=>'<span onclick="home(\''+c+'\')" class="px-3 py-1.5 rounded whitespace-nowrap cursor-pointer '+(c===curCat?'bg-[#D71920]':'text-gray-100')+'">'+c+'</span>').join('');
+  const all=latest();let h='';
+  if(!all.length)h='<p class="text-gray-500 py-10 text-center">এখনো কোনো খবর নেই।</p>';
+  else if(curCat!=='প্রচ্ছদ'){const l=all.filter(n=>n.c===curCat);h=sec(curCat,l)||'';if(!l.length)h='<p class="text-gray-500 py-10 text-center">এই বিভাগে এখনো কোনো খবর নেই।</p>'}
+  else{
+    h='<div class="grid lg:grid-cols-12 gap-6"><div class="lg:col-span-8">'+card(all[0],true)+(all.length>1?'<div class="grid sm:grid-cols-2 gap-5 mt-5 pt-5 border-t">'+all.slice(1,5).map(n=>card(n)).join('')+'</div>':'')+'</div><aside class="lg:col-span-4"><div class="flex"><button id="sdl" onclick="sideTab(\'l\')">সর্বশেষ</button><button id="sdp" onclick="sideTab(\'p\')">সর্বাধিক পঠিত</button></div><div id="sd" class="bg-white border p-3"></div></aside></div>'
+      +CATS.map(c=>{const l=all.filter(n=>n.c===c).slice(0,4);return l.length?sec(c,l):''}).join('');
+  }
+  $('hm').innerHTML=h;sideTab('l');fillImgs();
+}
+function search(v){
+  v=v.trim();if(!v){home();return}
+  $('reader').classList.add('hidden');$('hm').classList.remove('hidden');
+  const l=latest().filter(n=>(n.t+n.b).includes(v));
+  $('hm').innerHTML='<div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">'+(l.map(n=>card(n)).join('')||'<p class="text-gray-500">কিছু পাওয়া যায়নি।</p>')+'</div>';fillImgs();
+}
+function shareBar(n){
+  const u=encodeURIComponent(location.origin+location.pathname+'#n'+n.id),t=encodeURIComponent(n.t);
+  const b=(bg,l,href,tt)=>'<a href="'+href+'" target="_blank" rel="noopener" title="'+tt+'" class="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-sm" style="background:'+bg+'">'+l+'</a>';
+  return b('#1877F2','f','https://www.facebook.com/sharer/sharer.php?u='+u,'Facebook')+b('#000','𝕏','https://twitter.com/intent/tweet?url='+u+'&text='+t,'X')+b('#25D366','W','https://wa.me/?text='+t+'%20'+u,'WhatsApp')+b('#0A66C2','in','https://www.linkedin.com/sharing/share-offsite/?url='+u,'LinkedIn')+b('#229ED9','✈','https://t.me/share/url?url='+u+'&text='+t,'Telegram')+b('#E60023','P','https://pinterest.com/pin/create/button/?url='+u+'&description='+t,'Pinterest')
+   +'<button onclick="window.print()" title="প্রিন্ট" class="w-10 h-10 rounded-full bg-gray-400 text-white">🖨</button><button onclick="copyLink()" title="লিংক কপি" class="w-10 h-10 rounded-full bg-gray-700 text-white">🔗</button>';
+}
+function copyLink(){const u=location.origin+location.pathname+'#n'+cur.id;(navigator.clipboard?navigator.clipboard.writeText(u):Promise.reject()).then(()=>alert('লিংক কপি হয়েছে')).catch(()=>prompt('লিংক কপি করুন',u))}
+let taps=0,tt;
+function tapLogo(){taps++;clearTimeout(tt);tt=setTimeout(()=>taps=0,2000);if(taps>=5){taps=0;openAdmin()}}
+function showNews(id){
+  const n=S.news.find(x=>x.id===id);
+  $('hm').classList.add('hidden');$('reader').classList.remove('hidden');
+  if(!n){$('r-title').textContent=loaded?'খবরটি পাওয়া যায়নি':'লোড হচ্ছে...';return}
+  const fresh=!cur||cur.id!==id;
+  if(fresh){n.v++;if(IS_ADMIN)save()}
+  cur=n;document.title=n.t+' | সালথা সংবাদ';
+  $('r-cat').textContent=n.c;$('r-title').textContent=n.t;
+  $('r-by').textContent='✎ '+n.a;$('r-time').textContent='🕘 '+(fd(n.ts,true)||'')+' · 👁 '+bn(n.v);
+  $('r-share').innerHTML=shareBar(n);$('r-vid').innerHTML=vidEmbed(n.vd);
+  const im=$('r-img');delete im.dataset.im;im.removeAttribute('src');
+  if(n.im){im.dataset.im=n.im;im.classList.remove('hidden')}else if(n.i&&/^https:\/\//.test(n.i)){im.src=n.i;im.classList.remove('hidden')}else im.classList.add('hidden');
+  $('r-body').innerHTML=esc(n.b).replace(/\n/g,'<br><br>');
+  const rel=latest().filter(x=>x.c===n.c&&x.id!==n.id).slice(0,4);
+  $('r-rel').innerHTML=rel.length?'<h3 class="font-bold text-lg mb-3 border-b-2 border-[#D71920] inline-block">আরও পড়ুন</h3><div class="grid sm:grid-cols-2 gap-4">'+rel.map(x=>card(x)).join('')+'</div>':'';
+  renderCm();fillImgs();if(fresh)window.scrollTo(0,0);
+}
+function route(){
+  const h=location.hash;
+  if(h==='#saltha-admin'){history.replaceState(null,'',location.pathname);openAdmin();return}
+  const m=h.match(/^#n(\d+)$/);
+  if(m)showNews(+m[1]);else home();
+}
+addEventListener('hashchange',()=>{if(!$('pub').classList.contains('hidden')||location.hash==='#saltha-admin')route()});
+
+function renderCm(){
+  if(!cur)return;
+  const l=CM.filter(c=>c.nid===cur.id&&c.ok).sort((a,b)=>a.id-b.id),k=$('cmsg'),msg=k?k.outerHTML:'<p id="cmsg" class="text-sm"></p>';
+  $('cm').innerHTML='<h3 class="font-bold text-lg mb-3 border-b-2 border-[#D71920] inline-block">পাঠকের মন্তব্য ('+bn(l.length)+')</h3>'+l.map(c=>'<div class="flex gap-3 py-3 border-b"><div class="w-9 h-9 shrink-0 rounded-full bg-[#123B63] text-white flex items-center justify-center font-bold">'+esc(c.name.charAt(0))+'</div><div><b class="text-sm">'+esc(c.name)+'</b><p class="text-sm mt-0.5">'+esc(c.txt)+'</p></div></div>').join('')
+   +'<form onsubmit="addCm(event)" class="mt-4 space-y-2"><p class="font-semibold text-sm">আপনার মন্তব্য লিখুন</p><input id="c-n" maxlength="50" placeholder="আপনার নাম (ঐচ্ছিক)" class="w-full border rounded px-3 py-2 text-sm"><textarea id="c-t" required maxlength="500" rows="3" placeholder="মন্তব্য লিখুন" class="w-full border rounded px-3 py-2 text-sm"></textarea><button class="bg-[#D71920] text-white px-5 py-2 rounded text-sm font-bold">মন্তব্য পাঠান</button>'+msg+'</form>';
+}
+function addCm(e){
+  e.preventDefault();
+  const b=e.target.querySelector('button'),m=$('cmsg'),t=$('c-t').value.trim();if(!t)return;
+  b.disabled=true;m.className='text-sm text-gray-500';m.textContent='পাঠানো হচ্ছে...';
+  setDoc(doc(db,'comments',String(Date.now())),{nid:cur.id,name:$('c-n').value.trim()||'পাঠক',txt:t,ok:false})
+   .then(()=>{$('c-t').value='';b.disabled=false;m.className='text-sm text-green-700 font-semibold';m.textContent='✔ আপনার মন্তব্য পাঠানো হয়েছে। সম্পাদকের অনুমোদনের পর এখানে দেখা যাবে।'})
+   .catch(()=>{b.disabled=false;m.className='text-sm text-red-600';m.textContent='মন্তব্য পাঠানো যায়নি। নেট দেখে আবার চেষ্টা করুন।'});
+}
+const okCm=id=>updateDoc(doc(db,'comments',String(id)),{ok:true});
+const delCm=id=>deleteDoc(doc(db,'comments',String(id)));
+
+function watchCm(){
+  if(unCm)unCm();
+  const q=IS_ADMIN?collection(db,'comments'):query(collection(db,'comments'),where('ok','==',true));
+  unCm=onSnapshot(q,s=>{
+    window.cmErr=0;CM=s.docs.map(d=>{const x=d.data();x.id=Number(d.id);return x});
+    if(cur&&!$('reader').classList.contains('hidden'))renderCm();
+    if(IS_ADMIN&&!$('admin').classList.contains('hidden')&&$('tab').dataset.t==='cm')tab('cm');
+  },()=>{window.cmErr=1;if(IS_ADMIN&&$('tab').dataset.t==='cm')tab('cm')});
+}
+
+async function doLogin(e){
+  e.preventDefault();const er=$('err');
+  try{
+    const c=await signInWithEmailAndPassword(auth,$('em').value.trim(),$('pw').value);
+    if((c.user.email||'').toLowerCase()!==ADMIN_EMAIL){await signOut(auth);throw 0}
+    er.classList.add('hidden');$('pw').value='';go('admin');
+  }catch(x){er.textContent='ইমেইল বা পাসওয়ার্ড ভুল হয়েছে।';er.classList.remove('hidden')}
+}
+function resetPw(mail){
+  mail=(mail||ADMIN_EMAIL).trim();
+  sendPasswordResetEmail(auth,mail).then(()=>alert('পাসওয়ার্ড বদলানোর লিংক ইমেইলে পাঠানো হয়েছে (স্প্যাম ফোল্ডারও দেখুন)')).catch(()=>alert('ইমেইল পাঠানো যায়নি'));
+}
+function logout(){signOut(auth).then(()=>go('pub'))}
+
+const TABS=[['dash','📊 ড্যাশবোর্ড'],['news','📰 সংবাদ'],['breaking','🔥 ব্রেকিং'],['cats','🗂 বিভাগ'],['ads','📈 বিজ্ঞাপন'],['rep','👥 রিপোর্টার'],['cm','💬 মন্তব্য'],['seo','⚙️ সেটিংস/SEO']];
+function tab(t){
+  $('tab').dataset.t=t;
+  $('tabs').innerHTML=TABS.map(x=>'<button onclick="tab(\''+x[0]+'\')" class="px-3 py-2 rounded-xl whitespace-nowrap '+(x[0]===t?'bg-[#D71920] text-white':'bg-[#111827] text-gray-400')+'">'+x[1]+(x[0]==='cm'&&CM.some(c=>!c.ok)?' ('+bn(CM.filter(c=>!c.ok).length)+')':'')+'</button>').join('');
+  const box='bg-[#111827] border border-gray-800 rounded-xl p-4',inp='w-full px-3 py-2 bg-[#1a2333] border border-gray-700 rounded-xl text-sm text-white',btn='w-full py-2.5 bg-[#D71920] rounded-xl font-bold text-sm';
+  let h='';
+  if(t==='dash'){
+    const tv=S.news.reduce((s,n)=>s+n.v,0),mx=Math.max(1,...S.news.map(n=>n.v));
+    h='<div class="grid grid-cols-2 gap-3"><div class="'+box+'"><p class="text-xs text-gray-400">মোট সংবাদ</p><p class="text-3xl font-black">'+bn(S.news.length)+'</p></div><div class="'+box+'"><p class="text-xs text-gray-400">সর্বমোট ভিউ</p><p class="text-3xl font-black text-teal-400">'+bn(tv)+'</p></div></div><div class="'+box+'"><p class="font-bold mb-3">খবর অনুযায়ী ভিউ</p>'+S.news.map(n=>'<div class="mb-2 text-xs"><div class="flex justify-between"><span class="truncate pr-2">'+esc(n.t)+'</span><span>'+bn(n.v)+'</span></div><div class="h-2 bg-gray-800 rounded"><div class="h-2 bg-[#D71920] rounded" style="width:'+Math.round(n.v/mx*100)+'%"></div></div></div>').join('')+'</div>';
+  }
+  if(t==='news'){
+    h='<form onsubmit="addNews(event)" class="'+box+' space-y-2"><p class="font-bold">+ নতুন সংবাদ</p><input id="n-t" required placeholder="শিরোনাম" class="'+inp+'"><select id="n-c" class="'+inp+'">'+CATS.map(c=>'<option>'+c+'</option>').join('')+'</select><input id="n-a" placeholder="লেখকের নাম" value="সালথা (ফরিদপুর) প্রতিনিধি" class="'+inp+'"><p class="text-xs text-gray-400">ছবি (ফোন থেকে বেছে নিন, ঐচ্ছিক)</p><input id="n-f" type="file" accept="image/*" class="'+inp+'"><input id="n-i" placeholder="অথবা ছবির লিংক (ঐচ্ছিক)" class="'+inp+'"><input id="n-vd" placeholder="ভিডিও লিংক (YouTube বা Facebook, ঐচ্ছিক)" class="'+inp+'"><textarea id="n-b" required rows="5" placeholder="পূর্ণ খবর" class="'+inp+'"></textarea><button type="button" onclick="previewNews()" class="'+btn.replace('bg-[#D71920]','bg-[#123B63]')+'">👁 প্রকাশের আগে প্রিভিউ দেখুন</button><button class="'+btn+'">প্রকাশ করুন</button></form><div class="'+box+'"><p class="font-bold mb-2">সব সংবাদ</p>'+S.news.map(n=>'<div class="flex justify-between items-center py-2 border-b border-gray-800 text-sm"><span class="pr-2">'+esc(n.t)+'<br><span class="text-xs text-gray-500">'+esc(n.c)+' · '+bn(n.v)+' ভিউ</span></span><span class="shrink-0"><a href="#n'+n.id+'" target="_blank" class="text-sky-400 text-xs mr-3">দেখুন</a><button onclick="delNews('+n.id+')" class="text-red-400 text-xs">মুছুন</button></span></div>').join('')+'</div>';
+  }
+  if(t==='breaking')h='<div class="'+box+' space-y-2"><p class="font-bold">ব্রেকিং নিউজ টিকার</p><textarea id="tk" rows="3" class="'+inp+'">'+esc(S.ticker)+'</textarea><button onclick="saveTicker()" class="'+btn+'">আপডেট করুন</button></div>';
+  if(t==='cats')h='<div class="'+box+'"><p class="font-bold mb-2">বিভাগসমূহ</p>'+CATS.map(c=>'<span class="inline-block bg-[#1a2333] px-3 py-1 rounded-lg text-sm m-1">'+c+'</span>').join('')+'</div>';
+  if(t==='ads')h='<div class="'+box+' space-y-2"><p class="font-bold">বিজ্ঞাপন & Adsterra</p><label class="text-sm flex gap-2"><input type="checkbox" id="ad-on" '+(S.ads.on?'checked':'')+'> সব বিজ্ঞাপন চালু (কিল-সুইচ)</label><textarea id="ad-code" rows="5" placeholder="Adsterra ব্যানার কোড এখানে পেস্ট করুন" class="'+inp+'">'+esc(S.ads.code)+'</textarea><button onclick="saveAds()" class="'+btn+'">সেভ করুন</button></div>';
+  if(t==='rep')h='<form onsubmit="addRep(event)" class="'+box+' space-y-2"><p class="font-bold">নতুন সদস্য</p><input id="rp-n" required placeholder="নাম" class="'+inp+'"><select id="rp-r" class="'+inp+'"><option>Editor</option><option>Reporter</option></select><button class="'+btn+'">যোগ করুন</button></form><div class="'+box+'"><p class="font-bold mb-2">টিম</p>'+(S.rep.length?S.rep.map((r,i)=>'<div class="flex justify-between py-2 border-b border-gray-800 text-sm"><span>'+esc(r.n)+' <span class="text-xs text-gray-500">'+r.r+'</span></span><button onclick="delRep('+i+')" class="text-red-400 text-xs">মুছুন</button></div>').join(''):'<p class="text-sm text-gray-500">কেউ নেই</p>')+'</div>';
+  if(t==='cm'){
+    const f=window.cmf||'p',L=CM.slice().sort((a,b)=>b.id-a.id),cnt={p:L.filter(c=>!c.ok).length,a:L.filter(c=>c.ok).length,all:L.length},V=L.filter(c=>f==='all'||(f==='p'?!c.ok:c.ok));
+    h='<div class="'+box+'"><p class="font-bold mb-3">পাঠক মন্তব্য যাচাই</p>'+(window.cmErr?'<p class="text-red-400 text-xs mb-2">মন্তব্য লোড করা যায়নি। আবার লগইন করুন বা Firebase নিয়ম দেখুন।</p>':'')+'<div class="flex gap-2 mb-3 text-xs">'+[['p','অপেক্ষমাণ'],['a','প্রকাশিত'],['all','সব']].map(x=>'<button onclick="cmFilter(\''+x[0]+'\')" class="px-3 py-1.5 rounded-lg '+(f===x[0]?'bg-[#D71920] text-white':'bg-[#1a2333] text-gray-300')+'">'+x[1]+' ('+bn(cnt[x[0]])+')</button>').join('')+'</div>'+(V.length?V.map(c=>{const n=S.news.find(x=>x.id===c.nid);return '<div class="py-3 border-b border-gray-800 text-sm"><div class="flex justify-between gap-2"><b>'+esc(c.name)+'</b><span class="text-xs '+(c.ok?'text-teal-400':'text-amber-400')+'">'+(c.ok?'প্রকাশিত':'অপেক্ষমাণ')+'</span></div><p class="text-xs text-gray-500">'+fd(c.id,true)+' · খবর: '+(n?esc(n.t):'(মুছে ফেলা খবর)')+'</p><p class="text-gray-200 mt-1 whitespace-pre-wrap">'+esc(c.txt)+'</p><div class="text-xs mt-2 flex gap-4">'+(c.ok?'':'<button onclick="okCm('+c.id+')" class="text-teal-400 font-bold">✔ অনুমোদন</button>')+(n?'<a href="#n'+n.id+'" target="_blank" class="text-sky-400">খবর দেখুন</a>':'')+'<button onclick="delCm('+c.id+')" class="text-red-400">মুছুন</button></div></div>'}).join(''):'<p class="text-sm text-gray-500">কোনো মন্তব্য নেই</p>')+'</div>';
+  }
+  if(t==='seo')h='<div class="'+box+' space-y-2"><p class="font-bold">সাইট সেটিংস & এসইও</p><input id="s-t" placeholder="সাইটের টাইটেল" value="'+esc(S.seo.title)+'" class="'+inp+'"><textarea id="s-d" rows="3" placeholder="মেটা বিবরণ" class="'+inp+'">'+esc(S.seo.desc)+'</textarea><input id="s-e" placeholder="সম্পাদক ও প্রকাশকের নাম" value="'+esc(S.seo.ed||'')+'" class="'+inp+'"><input id="s-p" placeholder="ফোন" value="'+esc(S.seo.phone)+'" class="'+inp+'"><input id="s-a" placeholder="ঠিকানা" value="'+esc(S.seo.addr)+'" class="'+inp+'"><button onclick="saveSeo()" class="'+btn+'">সেভ করুন</button></div>';
+  $('tab').innerHTML=h;
+}
+function vidEmbed(u){
+  if(!u||!/^https:\/\//.test(u))return '';
+  const m=u.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|shorts\/|embed\/))([\w-]{11})/);
+  if(m)return '<div class="aspect-video"><iframe class="w-full h-full rounded-lg" src="https://www.youtube.com/embed/'+m[1]+'" allowfullscreen loading="lazy"></iframe></div>';
+  if(/facebook\.com|fb\.watch/.test(u))return '<div class="aspect-video"><iframe class="w-full h-full rounded-lg" src="https://www.facebook.com/plugins/video.php?href='+encodeURIComponent(u)+'&show_text=false" allowfullscreen loading="lazy"></iframe></div>';
+  return '';
+}
+const IMG={};
+function fillImgs(){document.querySelectorAll('img[data-im]').forEach(el=>{const id=el.dataset.im;if(IMG[id]){el.src=IMG[id];return}getDoc(doc(db,'images',id)).then(x=>{if(x.exists()){IMG[id]=x.data().d;el.src=IMG[id]}}).catch(()=>{})})}
+function compress(file){return new Promise((res,rej)=>{const im=new Image(),u=URL.createObjectURL(file);im.onload=()=>{const r=Math.min(1,900/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=Math.round(im.width*r);c.height=Math.round(im.height*r);c.getContext('2d').drawImage(im,0,0,c.width,c.height);URL.revokeObjectURL(u);let q=.8,d=c.toDataURL('image/jpeg',q);while(d.length>700000&&q>.4){q-=.1;d=c.toDataURL('image/jpeg',q)}res(d)};im.onerror=rej;im.src=u})}
+async function addNews(e){
+  e.preventDefault();
+  const b=e.target.querySelector('button'),old=b.textContent;b.disabled=true;b.textContent='প্রকাশ হচ্ছে...';
+  try{
+    const id=S.news.reduce((m,n)=>Math.max(m,n.id),0)+1,item={id,t:$('n-t').value,c:$('n-c').value,a:$('n-a').value||'নিজস্ব প্রতিবেদক',b:$('n-b').value,i:$('n-i').value.trim(),vd:$('n-vd').value.trim(),ts:Date.now(),v:0},f=$('n-f').files[0];
+    if(f){const d=await compress(f),iid='i'+Date.now();await setDoc(doc(db,'images',iid),{d});item.im=iid}
+    S.news.unshift(item);save();tab('news');
+  }catch(x){alert('ছবি আপলোড করা যায়নি, আবার চেষ্টা করুন');b.disabled=false;b.textContent=old}
+}
+function delNews(id){if(!confirm('এই খবর মুছবেন?'))return;const o=S.news.find(n=>n.id===id);if(o&&o.im)deleteDoc(doc(db,'images',o.im)).catch(()=>{});S.news=S.news.filter(n=>n.id!==id);save();tab('news')}
+function cmFilter(k){window.cmf=k;tab('cm')}
+function previewNews(){
+  const t=$('n-t').value.trim(),b=$('n-b').value.trim();if(!t||!b){alert('শিরোনাম ও খবর লিখুন');return}
+  const f=$('n-f').files[0],u=$('n-i').value.trim(),src=f?URL.createObjectURL(f):(/^https:\/\//.test(u)?u:'');
+  const o=document.createElement('div');o.id='pv';o.className='fixed inset-0 z-50 bg-black/70 overflow-y-auto p-3';
+  o.innerHTML='<div class="max-w-3xl mx-auto bg-white text-[#171717] rounded-xl p-5"><div class="flex justify-between items-center mb-3"><b class="text-[#D71920]">প্রিভিউ (এখনো প্রকাশ হয়নি)</b><button onclick="document.getElementById(\'pv\').remove()" class="bg-gray-800 text-white px-3 py-1 rounded">✕ বন্ধ</button></div><p class="text-xs text-gray-500">প্রচ্ছদ › '+esc($('n-c').value)+'</p><h1 class="text-2xl md:text-3xl font-extrabold mt-2 leading-snug">'+esc(t)+'</h1><div class="flex gap-3 items-center my-4 py-3 border-y"><div class="w-14 h-14 rounded-full border-2 border-black flex items-center justify-center mh text-2xl shrink-0">স</div><div><p class="font-bold text-green-700">✎ '+esc($('n-a').value)+'</p><p class="text-sm text-[#0b6a8a]">🕘 '+fd(Date.now(),true)+'</p></div></div>'+vidEmbed($('n-vd').value.trim())+(src?'<img src="'+esc(src)+'" class="w-full rounded-lg mb-4">':'')+'<div class="text-[17px] leading-8">'+esc(b).replace(/\n/g,'<br><br>')+'</div></div>';
+  document.body.appendChild(o);
+}
+function saveTicker(){S.ticker=$('tk').value;save();alert('আপডেট হয়েছে')}
+function saveAds(){S.ads={on:$('ad-on').checked,code:$('ad-code').value};save();alert('সেভ হয়েছে')}
+function addRep(e){e.preventDefault();S.rep.push({n:$('rp-n').value,r:$('rp-r').value});save();tab('rep')}
+function delRep(i){S.rep.splice(i,1);save();tab('rep')}
+function saveSeo(){S.seo={ed:$('s-e').value,title:$('s-t').value,desc:$('s-d').value,phone:$('s-p').value,addr:$('s-a').value};save();alert('সেভ হয়েছে')}
+
+if(DEMO){
+  const ok=()=>Promise.resolve(),t=Date.now();
+  S.news=[
+    {id:1,t:'সালথায় পাটের রেকর্ড বাম্পার ফলন, কৃষকের মুখে হাসি',c:'কৃষি ও অর্থনীতি',a:'সালথা (ফরিদপুর) প্রতিনিধি',b:'এ বছর সালথা উপজেলায় পাটের ফলন গত কয়েক বছরের তুলনায় বেশি হয়েছে।\n\nকৃষকরা ন্যায্য দাম পাওয়ার আশা করছেন।',v:320,ts:t-36e5},
+    {id:2,t:'ফরিদপুরে সড়ক সংস্কারের কাজ শুরু',c:'ফরিদপুর',a:'জেলা প্রতিনিধি',b:'জেলা শহরের গুরুত্বপূর্ণ সড়কগুলোর সংস্কার কাজ শুরু হয়েছে।',v:210,ts:t-72e5},
+    {id:3,t:'সালথায় শীতকালীন সবজির চাষ বেড়েছে',c:'সালথা',a:'সালথা (ফরিদপুর) প্রতিনিধি',b:'এবার মাঠে শীতকালীন সবজির আবাদ বেড়েছে। স্থানীয় বাজারে সরবরাহও বাড়ছে।',v:180,ts:t-108e5},
+    {id:4,t:'জাতীয় সংসদ নির্বাচনের প্রস্তুতি নিয়ে আলোচনা',c:'রাজনীতি',a:'নিজস্ব প্রতিবেদক',b:'নির্বাচনের প্রস্তুতি নিয়ে বিভিন্ন দলের নেতারা মত দিয়েছেন।',v:95,ts:t-144e5},
+    {id:5,t:'বাংলাদেশের অর্থনীতিতে নতুন সম্ভাবনা',c:'বাংলাদেশ',a:'নিজস্ব প্রতিবেদক',b:'বিশেষজ্ঞদের মতে আগামী বছরে প্রবৃদ্ধি বাড়তে পারে।',v:60,ts:t-18e6}
+  ];
+  S.ticker='ডেমো প্রিভিউ: এটি নমুনা ব্রেকিং নিউজ';loaded=true;IS_ADMIN=true;
+  $('demo').classList.remove('hidden');
+  doc=()=>({});getDoc=ok;setDoc=ok;updateDoc=ok;deleteDoc=ok;collection=()=>({});query=()=>({});where=()=>({});
+  onSnapshot=()=>()=>{};signOut=ok;sendPasswordResetEmail=ok;signInWithEmailAndPassword=()=>Promise.reject();
+  onAuthStateChanged=(a,cb)=>cb({email:ADMIN_EMAIL});
+}
+Object.assign(window,{go,home,previewNews,cmFilter,search,sideTab,tapLogo,copyLink,doLogin,resetPw,logout,tab,addNews,delNews,saveTicker,saveAds,addRep,delRep,saveSeo,addCm,okCm,delCm,openAdmin});
+
+onSnapshot(doc(db,'site','state'),s=>{
+  if(s.exists()){try{S=Object.assign(S,JSON.parse(s.data().json))}catch(e){}}
+  else if(IS_ADMIN&&!loaded){S.news=[];save()}
+  loaded=true;fix();
+  if(!$('pub').classList.contains('hidden'))route();
+},()=>{});
+onAuthStateChanged(auth,u=>{
+  IS_ADMIN=!!u&&(u.email||'').toLowerCase()===ADMIN_EMAIL;
+  $('adm-fab').classList.toggle('hidden',!IS_ADMIN);
+  if(!IS_ADMIN&&!$('admin').classList.contains('hidden'))go('pub');
+  watchCm();
+});
+route();
+</script>
+</body>
+</html>

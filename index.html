@@ -4,6 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>সালথা সংবাদ | সত্যের পথে, মানুষের পাশে।</title>
+<link rel="preconnect" href="https://www.gstatic.com" crossorigin><link rel="preconnect" href="https://firestore.googleapis.com" crossorigin>
+<link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js"><link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js"><link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js">
+<meta name="description" content="সালথা ও ফরিদপুরের সর্বশেষ খবর, সবার আগে, নির্ভরযোগ্যভাবে।">
+<meta property="og:type" content="website"><meta property="og:site_name" content="সালথা সংবাদ">
+<meta property="og:title" content="সালথা সংবাদ | সত্যের পথে, মানুষের পাশে।">
+<meta property="og:description" content="সালথা ও ফরিদপুরের সর্বশেষ খবর, সবার আগে, নির্ভরযোগ্যভাবে।">
+<meta property="og:image" content="https://salthasangbad.github.io/og.jpg"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+<meta property="og:url" content="https://salthasangbad.github.io/"><meta name="twitter:card" content="summary_large_image">
 <link href="https://fonts.googleapis.com/css2?family=Anek+Bangla:wght@800&family=Hind+Siliguri:wght@400;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com/3.4.17"></script>
 <style>
@@ -17,7 +25,7 @@ body{font-family:'Hind Siliguri',sans-serif;background:#f4f5f7;color:#171717;mar
 <body>
 
 <div id="pub">
-  <div id="demo" class="hidden bg-yellow-100 text-yellow-900 text-xs text-center py-1">⚠ ডেমো প্রিভিউ — ডাটাবেস সংযুক্ত নয়, নমুনা খবর দেখানো হচ্ছে (আসল সাইটে আপনার খবর আসবে)</div>
+  <div id="demo" class="hidden bg-yellow-100 text-yellow-900 text-xs text-center py-1"></div>
   <div class="bg-white border-b text-xs px-4 py-2 flex justify-between items-center text-gray-600">
     <span>📅 <span id="dt"></span> | <b class="text-[#123B63]">ফরিদপুর জেলা সংস্করণ</b></span>
     <input id="q" oninput="search(this.value)" placeholder="🔍 খুঁজুন" class="border rounded-full px-3 py-1 w-32 text-xs">
@@ -35,7 +43,7 @@ body{font-family:'Hind Siliguri',sans-serif;background:#f4f5f7;color:#171717;mar
   </div>
   <div id="adtop" class="max-w-6xl mx-auto px-4 mt-3"></div>
   <main class="max-w-6xl mx-auto p-4">
-    <div id="hm"></div>
+    <div id="hm"><div class="grid sm:grid-cols-3 gap-5 animate-pulse"><div class="h-44 bg-gray-200 rounded-lg"></div><div class="h-44 bg-gray-200 rounded-lg"></div><div class="h-44 bg-gray-200 rounded-lg"></div></div></div>
     <article id="reader" class="hidden max-w-3xl mx-auto bg-white p-5 rounded-xl border">
       <p class="text-xs text-gray-500"><a href="#" onclick="home();return false" class="text-[#D71920] font-bold">প্রচ্ছদ</a> › <span id="r-cat"></span></p>
       <h1 id="r-title" class="text-2xl md:text-3xl font-extrabold mt-2 leading-snug"></h1>
@@ -47,13 +55,16 @@ body{font-family:'Hind Siliguri',sans-serif;background:#f4f5f7;color:#171717;mar
       <div id="r-share" class="flex flex-wrap gap-2 pb-4 border-b mb-4"></div>
       <div id="r-vid"></div><img id="r-img" class="hidden w-full rounded-lg mb-4">
       <div id="r-body" class="text-[17px] leading-8"></div>
+      <div id="r-foot" class="mt-6 pt-3 border-t text-sm text-gray-600"></div>
       <div id="r-rel" class="mt-8"></div>
       <div id="cm" class="mt-8 pt-4 border-t"></div>
     </article>
+    <article id="pg" class="hidden max-w-3xl mx-auto bg-white p-5 rounded-xl border"></article>
   </main>
   <footer class="bg-[#171717] text-center text-gray-400 text-xs py-8 border-t-4 border-[#D71920] mt-6">
     <div id="flogo" onclick="tapLogo()" class="mh text-3xl text-white select-none"><span class="text-[#D71920]">সালথা</span> সংবাদ</div>
     <p class="text-red-500 font-bold mt-1">সত্যের পথে, মানুষের পাশে।</p>
+    <p class="mt-4 flex justify-center gap-5 text-gray-300 text-sm"><a href="#about">সম্পর্কে</a><a href="#contact">যোগাযোগ</a><a href="#privacy">প্রাইভেসি পলিসি</a></p>
     <p id="fed" class="mt-3"></p><p id="ft" class="mt-1"></p>
   </footer>
   <button id="adm-fab" onclick="go('admin')" class="hidden fixed bottom-4 right-4 z-40 bg-[#123B63] text-white px-4 py-2 rounded-full shadow-lg text-sm font-bold">⚙️ প্যানেল</button>
@@ -89,17 +100,28 @@ body{font-family:'Hind Siliguri',sans-serif;background:#f4f5f7;color:#171717;mar
   <div id="tab" class="p-4 max-w-4xl mx-auto space-y-4"></div>
 </div>
 
+<script>
+(function(){try{if(/^#(n\d+|about|contact|privacy|saltha-admin)$/.test(location.hash))return;
+var c=JSON.parse(localStorage.getItem('saltha_cache')||'null');if(!c||!c.news||!c.news.length)return;
+var n=c.news.slice().sort(function(a,b){return(b.ts||0)-(a.ts||0)||b.id-a.id}).slice(0,9),e=function(s){var d=document.createElement('div');d.textContent=s;return d.innerHTML};
+document.getElementById('hm').innerHTML='<div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">'+n.map(function(x){return '<a href="#n'+x.id+'" class="block"><span class="text-xs font-bold text-[#D71920]">'+e(x.c)+'</span><h3 class="font-bold text-lg leading-snug mt-1">'+e(x.t)+'</h3></a>'}).join('')+'</div>';
+document.getElementById('ticker').textContent=n.slice(0,3).map(function(x){return x.t}).join('   •   ');
+}catch(x){}})();
+</script>
 <script type="module">
+const PREVIEW=!location.hostname||/claude|anthropic|localhost/.test(location.hostname);
+let IMPFAIL=false;
 let initializeApp,getAuth,signInWithEmailAndPassword,signOut,onAuthStateChanged,sendPasswordResetEmail,getFirestore,doc,getDoc,setDoc,updateDoc,deleteDoc,onSnapshot,collection,query,where,DEMO=false;
 try{
   const B='https://www.gstatic.com/firebasejs/10.14.1/';
   const [fa,fb,fc]=await Promise.all([import(B+'firebase-app.js'),import(B+'firebase-auth.js'),import(B+'firebase-firestore.js')]);
   ({initializeApp}=fa);({getAuth,signInWithEmailAndPassword,signOut,onAuthStateChanged,sendPasswordResetEmail}=fb);({getFirestore,doc,getDoc,setDoc,updateDoc,deleteDoc,onSnapshot,collection,query,where}=fc);
-}catch(e){DEMO=true}
+}catch(e){if(PREVIEW)DEMO=true;else IMPFAIL=true}
 
 const ADMIN_EMAIL='junayedahmad5003@gmail.com';
+const SHARE_BASE='';
 let auth,db;
-if(!DEMO){const app=initializeApp({
+if(!DEMO&&!IMPFAIL){const app=initializeApp({
   apiKey:"AIzaSyABKCOjZnTu6155-eho8aqdGVkaxX1oVHw",
   authDomain:"saltha-sangbad.firebaseapp.com",
   projectId:"saltha-sangbad",
@@ -112,11 +134,12 @@ const esc=s=>{const d=document.createElement('div');d.textContent=s;return d.inn
 const CATS=['সালথা','ফরিদপুর','বাংলাদেশ','রাজনীতি','কৃষি ও অর্থনীতি'];
 let S={ticker:'সালথা সংবাদে স্বাগতম',news:[]},CM=[],IS_ADMIN=false,cur=null,curCat='প্রচ্ছদ',unCm=null,loaded=false;
 function fix(){S.ads=S.ads||{on:true,code:''};S.rep=S.rep||[];S.seo=S.seo||{title:'',desc:'',phone:'',addr:''};S.news=S.news||[]}
+try{const c=JSON.parse(localStorage.getItem('saltha_cache')||'null');if(c&&c.news&&!DEMO)Object.assign(S,c)}catch(e){}
 fix();
 $('dt').textContent=new Date().toLocaleDateString('bn-BD',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
 
 function save(){
-  if(!IS_ADMIN)return;
+  if(!IS_ADMIN||!loaded)return;
   setDoc(doc(db,'site','state'),{json:JSON.stringify(S)}).catch(()=>alert('সেভ করা যায়নি'));
 }
 function go(v){['pub','login','admin'].forEach(x=>$(x).classList.toggle('hidden',x!==v));window.scrollTo(0,0);if(v==='admin')tab('dash')}
@@ -127,7 +150,7 @@ const thumb=n=>n.im?'<img data-im="'+n.im+'" class="w-full h-full object-cover b
 const latest=()=>S.news.slice().sort((a,b)=>(b.ts||0)-(a.ts||0)||b.id-a.id);
 function card(n,big){
   const t=thumb(n);
-  return '<a href="#n'+n.id+'" class="block group">'+(t?'<div class="'+(big?'aspect-video':'aspect-[16/10]')+' overflow-hidden rounded-lg mb-2">'+t+'</div>':'')+'<h3 class="font-bold leading-snug group-hover:text-[#D71920] '+(big?'text-2xl md:text-3xl':'text-base')+'">'+esc(n.t)+'</h3>'+(big?'<p class="text-sm text-gray-600 mt-2">'+esc(n.b.slice(0,160))+'...</p>':'')+'<p class="text-xs text-gray-400 mt-1">'+fd(n.ts)+'</p></a>';
+  return '<a href="#n'+n.id+'" class="block group">'+(t?'<div class="'+(big?'aspect-video':'aspect-[16/10]')+' overflow-hidden rounded-lg mb-2">'+t+'</div>':'')+'<h3 class="font-bold leading-snug group-hover:text-[#D71920] '+(big?'text-2xl md:text-3xl':'text-base')+'">'+esc(n.t)+'</h3>'+(big?'<p class="text-sm text-gray-600 mt-2">'+esc(n.b.slice(0,160))+'...</p>':'')+'<p class="text-xs text-gray-500 mt-1">'+esc(n.c)+' · '+esc(n.a)+(n.ts?' · '+fd(n.ts):'')+'</p></a>';
 }
 function row(n){const t=thumb(n);return '<a href="#n'+n.id+'" class="flex gap-3 py-2 border-b group">'+(t?'<div class="w-20 h-14 shrink-0 rounded overflow-hidden">'+t+'</div>':'')+'<span class="text-sm font-semibold leading-snug group-hover:text-[#D71920]">'+esc(n.t)+'</span></a>'}
 const sec=(t,l)=>'<section class="mt-8"><h2 class="border-b-2 border-[#D71920] mb-3"><span class="bg-[#D71920] text-white px-3 py-1 inline-block font-bold">'+esc(t)+'</span></h2><div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">'+l.map(n=>card(n)).join('')+'</div></section>';
@@ -138,17 +161,17 @@ function sideTab(k){
 }
 function home(cat){
   if(cat)curCat=cat;cur=null;$('q').value='';
-  if(location.hash.startsWith('#n'))history.replaceState(null,'',location.pathname);
+  if(/^#(n\d+|about|contact|privacy)$/.test(location.hash))history.replaceState(null,'',location.pathname);
   document.title=S.seo.title||'সালথা সংবাদ | সত্যের পথে, মানুষের পাশে।';
-  $('reader').classList.add('hidden');$('hm').classList.remove('hidden');
-  $('ticker').textContent=S.ticker;
+  $('reader').classList.add('hidden');$('pg').classList.add('hidden');$('hm').classList.remove('hidden');
+  $('ticker').textContent=(S.ticker&&S.ticker.trim()&&S.ticker!=='সালথা সংবাদে স্বাগতম')?S.ticker:(latest().slice(0,3).map(n=>n.t).join('   •   ')||'সালথা সংবাদ');
   $('fed').textContent=S.seo.ed?'সম্পাদক ও প্রকাশক : '+S.seo.ed:'';
   $('ft').textContent='© ২০২৬ সালথা সংবাদ। সর্বস্বত্ব সংরক্ষিত।'+(S.seo.phone?' ফোন: '+S.seo.phone:'')+(S.seo.addr?' | '+S.seo.addr:'');
   const ad=$('adtop');ad.innerHTML='';
   if(S.ads.on&&S.ads.code){const f=document.createElement('iframe');f.style.cssText='width:100%;height:100px;border:0';f.setAttribute('sandbox','allow-scripts allow-popups');f.srcdoc=S.ads.code;ad.appendChild(f)}
-  $('cats').innerHTML=['প্রচ্ছদ'].concat(CATS).map(c=>'<span onclick="home(\''+c+'\')" class="px-3 py-1.5 rounded whitespace-nowrap cursor-pointer '+(c===curCat?'bg-[#D71920]':'text-gray-100')+'">'+c+'</span>').join('');
+  $('cats').innerHTML=['প্রচ্ছদ'].concat(CATS.filter(c=>c===curCat||S.news.some(n=>n.c===c))).map(c=>'<span onclick="home(\''+c+'\')" class="px-3 py-1.5 rounded whitespace-nowrap cursor-pointer '+(c===curCat?'bg-[#D71920]':'text-gray-100')+'">'+c+'</span>').join('');
   const all=latest();let h='';
-  if(!all.length)h='<p class="text-gray-500 py-10 text-center">এখনো কোনো খবর নেই।</p>';
+  if(!all.length)h=loaded?'<p class="text-gray-500 py-10 text-center">এখনো কোনো খবর নেই।</p>':(window.dbErr?'<p class="text-gray-500 py-10 text-center">সাময়িক সমস্যা হচ্ছে। কিছুক্ষণ পর পাতাটি রিফ্রেশ করুন।</p>':'<div class="grid sm:grid-cols-3 gap-5 animate-pulse"><div class="h-44 bg-gray-200 rounded-lg"></div><div class="h-44 bg-gray-200 rounded-lg"></div><div class="h-44 bg-gray-200 rounded-lg"></div></div>');
   else if(curCat!=='প্রচ্ছদ'){const l=all.filter(n=>n.c===curCat);h=sec(curCat,l)||'';if(!l.length)h='<p class="text-gray-500 py-10 text-center">এই বিভাগে এখনো কোনো খবর নেই।</p>'}
   else{
     h='<div class="grid lg:grid-cols-12 gap-6"><div class="lg:col-span-8">'+card(all[0],true)+(all.length>1?'<div class="grid sm:grid-cols-2 gap-5 mt-5 pt-5 border-t">'+all.slice(1,5).map(n=>card(n)).join('')+'</div>':'')+'</div><aside class="lg:col-span-4"><div class="flex"><button id="sdl" onclick="sideTab(\'l\')">সর্বশেষ</button><button id="sdp" onclick="sideTab(\'p\')">সর্বাধিক পঠিত</button></div><div id="sd" class="bg-white border p-3"></div></aside></div>'
@@ -158,22 +181,23 @@ function home(cat){
 }
 function search(v){
   v=v.trim();if(!v){home();return}
-  $('reader').classList.add('hidden');$('hm').classList.remove('hidden');
+  $('reader').classList.add('hidden');$('pg').classList.add('hidden');$('hm').classList.remove('hidden');
   const l=latest().filter(n=>(n.t+n.b).includes(v));
   $('hm').innerHTML='<div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">'+(l.map(n=>card(n)).join('')||'<p class="text-gray-500">কিছু পাওয়া যায়নি।</p>')+'</div>';fillImgs();
 }
+const shareUrl=n=>SHARE_BASE?SHARE_BASE+'/n/'+n.id:location.origin+location.pathname+'#n'+n.id;
 function shareBar(n){
-  const u=encodeURIComponent(location.origin+location.pathname+'#n'+n.id),t=encodeURIComponent(n.t);
+  const u=encodeURIComponent(shareUrl(n)),t=encodeURIComponent(n.t);
   const b=(bg,l,href,tt)=>'<a href="'+href+'" target="_blank" rel="noopener" title="'+tt+'" class="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-sm" style="background:'+bg+'">'+l+'</a>';
   return b('#1877F2','f','https://www.facebook.com/sharer/sharer.php?u='+u,'Facebook')+b('#000','𝕏','https://twitter.com/intent/tweet?url='+u+'&text='+t,'X')+b('#25D366','W','https://wa.me/?text='+t+'%20'+u,'WhatsApp')+b('#0A66C2','in','https://www.linkedin.com/sharing/share-offsite/?url='+u,'LinkedIn')+b('#229ED9','✈','https://t.me/share/url?url='+u+'&text='+t,'Telegram')+b('#E60023','P','https://pinterest.com/pin/create/button/?url='+u+'&description='+t,'Pinterest')
    +'<button onclick="window.print()" title="প্রিন্ট" class="w-10 h-10 rounded-full bg-gray-400 text-white">🖨</button><button onclick="copyLink()" title="লিংক কপি" class="w-10 h-10 rounded-full bg-gray-700 text-white">🔗</button>';
 }
-function copyLink(){const u=location.origin+location.pathname+'#n'+cur.id;(navigator.clipboard?navigator.clipboard.writeText(u):Promise.reject()).then(()=>alert('লিংক কপি হয়েছে')).catch(()=>prompt('লিংক কপি করুন',u))}
+function copyLink(){const u=shareUrl(cur);(navigator.clipboard?navigator.clipboard.writeText(u):Promise.reject()).then(()=>alert('লিংক কপি হয়েছে')).catch(()=>prompt('লিংক কপি করুন',u))}
 let taps=0,tt;
 function tapLogo(){taps++;clearTimeout(tt);tt=setTimeout(()=>taps=0,2000);if(taps>=5){taps=0;openAdmin()}}
 function showNews(id){
   const n=S.news.find(x=>x.id===id);
-  $('hm').classList.add('hidden');$('reader').classList.remove('hidden');
+  $('hm').classList.add('hidden');$('pg').classList.add('hidden');$('reader').classList.remove('hidden');
   if(!n){$('r-title').textContent=loaded?'খবরটি পাওয়া যায়নি':'লোড হচ্ছে...';return}
   const fresh=!cur||cur.id!==id;
   if(fresh){n.v++;if(IS_ADMIN)save()}
@@ -184,15 +208,28 @@ function showNews(id){
   const im=$('r-img');delete im.dataset.im;im.removeAttribute('src');
   if(n.im){im.dataset.im=n.im;im.classList.remove('hidden')}else if(n.i&&/^https:\/\//.test(n.i)){im.src=n.i;im.classList.remove('hidden')}else im.classList.add('hidden');
   $('r-body').innerHTML=esc(n.b).replace(/\n/g,'<br><br>');
+  $('r-foot').innerHTML='<b>বিভাগ:</b> '+esc(n.c)+' &nbsp;|&nbsp; <b>প্রতিবেদক:</b> '+esc(n.a)+(n.ts?' &nbsp;|&nbsp; <b>প্রকাশ:</b> '+fd(n.ts,true):'');
   const rel=latest().filter(x=>x.c===n.c&&x.id!==n.id).slice(0,4);
   $('r-rel').innerHTML=rel.length?'<h3 class="font-bold text-lg mb-3 border-b-2 border-[#D71920] inline-block">আরও পড়ুন</h3><div class="grid sm:grid-cols-2 gap-4">'+rel.map(x=>card(x)).join('')+'</div>':'';
   renderCm();fillImgs();if(fresh)window.scrollTo(0,0);
+}
+const PAGES={
+ about:['আমাদের সম্পর্কে',()=>'<p><b>সালথা সংবাদ</b> ফরিদপুর জেলার সালথা উপজেলা ও আশপাশের এলাকার সর্বশেষ খবর পাঠকের কাছে পৌঁছে দেওয়ার একটি অনলাইন সংবাদ মাধ্যম।</p><p>আমাদের স্লোগান: <b>সত্যের পথে, মানুষের পাশে।</b> স্থানীয় মানুষের সমস্যা, উন্নয়ন, কৃষি, অর্থনীতি ও সমাজের খবর যাচাই করে প্রকাশ করাই আমাদের লক্ষ্য।</p><p>কোনো খবরে ভুল থাকলে বা আপনার কাছে নতুন কোনো খবর থাকলে <a href="#contact" class="text-[#D71920] font-bold">যোগাযোগ</a> পাতার মাধ্যমে আমাদের জানান।</p>'],
+ contact:['যোগাযোগ',()=>'<p>খবর পাঠাতে, মতামত বা অভিযোগ জানাতে আমাদের সাথে যোগাযোগ করুন।</p><ul class="list-disc pl-5 space-y-1"><li><b>ঠিকানা:</b> '+esc(S.seo.addr||'সালথা, ফরিদপুর, বাংলাদেশ')+'</li>'+(S.seo.phone?'<li><b>ফোন:</b> '+esc(S.seo.phone)+'</li>':'')+(S.seo.mail?'<li><b>ইমেইল:</b> '+esc(S.seo.mail)+'</li>':'')+(S.seo.ed?'<li><b>সম্পাদক ও প্রকাশক:</b> '+esc(S.seo.ed)+'</li>':'')+'</ul><p class="text-sm text-gray-500">প্রতিটি খবরের নিচের মন্তব্যের ঘরেও আপনি আপনার মতামত জানাতে পারেন।</p>'],
+ privacy:['প্রাইভেসি পলিসি',()=>'<p>সালথা সংবাদে আপনাকে স্বাগতম। আপনার গোপনীয়তা আমাদের কাছে গুরুত্বপূর্ণ।</p><p><b>আমরা কী তথ্য রাখি:</b> খবরের নিচে মন্তব্য করলে আপনার দেওয়া নাম ও মন্তব্য আমরা সংরক্ষণ করি। সাইট দ্রুত খোলার জন্য আপনার ব্রাউজারে সাময়িক তথ্য (ক্যাশ) জমা থাকে।</p><p><b>মন্তব্য:</b> সম্পাদকের অনুমোদনের পরই মন্তব্য প্রকাশ হয়। অশালীন, মানহানিকর বা বিভ্রান্তিকর মন্তব্য মুছে ফেলার অধিকার আমরা রাখি।</p><p><b>তৃতীয় পক্ষের সেবা:</b> সাইট চালাতে Google Firebase ও Google Fonts ব্যবহার করা হয়। ভিডিও ও শেয়ার বাটনে YouTube, Facebook ইত্যাদির লিংক থাকতে পারে, সেগুলোর নিজস্ব গোপনীয়তা নীতি আছে। ভবিষ্যতে বিজ্ঞাপন দেখানো হলে বিজ্ঞাপন সেবাদাতা কুকি ব্যবহার করতে পারে।</p><p><b>আমরা আপনার ব্যক্তিগত তথ্য বিক্রি করি না।</b></p><p>এই নীতি প্রয়োজনে বদলানো হতে পারে। প্রশ্ন থাকলে <a href="#contact" class="text-[#D71920] font-bold">যোগাযোগ</a> করুন।</p>']
+};
+function showPage(k){
+  const p=PAGES[k];
+  $('hm').classList.add('hidden');$('reader').classList.add('hidden');$('pg').classList.remove('hidden');
+  cur=null;document.title=p[0]+' | সালথা সংবাদ';
+  $('pg').innerHTML='<p class="text-xs text-gray-500"><a href="#" onclick="home();return false" class="text-[#D71920] font-bold">প্রচ্ছদ</a> › '+p[0]+'</p><h1 class="text-2xl font-extrabold mt-2 mb-4">'+p[0]+'</h1><div class="space-y-3 text-[16px] leading-8">'+p[1]()+'</div>';
+  window.scrollTo(0,0);
 }
 function route(){
   const h=location.hash;
   if(h==='#saltha-admin'){history.replaceState(null,'',location.pathname);openAdmin();return}
   const m=h.match(/^#n(\d+)$/);
-  if(m)showNews(+m[1]);else home();
+  if(m)showNews(+m[1]);else if(PAGES[h.slice(1)])showPage(h.slice(1));else home();
 }
 addEventListener('hashchange',()=>{if(!$('pub').classList.contains('hidden')||location.hash==='#saltha-admin')route()});
 
@@ -258,7 +295,7 @@ function tab(t){
     const f=window.cmf||'p',L=CM.slice().sort((a,b)=>b.id-a.id),cnt={p:L.filter(c=>!c.ok).length,a:L.filter(c=>c.ok).length,all:L.length},V=L.filter(c=>f==='all'||(f==='p'?!c.ok:c.ok));
     h='<div class="'+box+'"><p class="font-bold mb-3">পাঠক মন্তব্য যাচাই</p>'+(window.cmErr?'<p class="text-red-400 text-xs mb-2">মন্তব্য লোড করা যায়নি। আবার লগইন করুন বা Firebase নিয়ম দেখুন।</p>':'')+'<div class="flex gap-2 mb-3 text-xs">'+[['p','অপেক্ষমাণ'],['a','প্রকাশিত'],['all','সব']].map(x=>'<button onclick="cmFilter(\''+x[0]+'\')" class="px-3 py-1.5 rounded-lg '+(f===x[0]?'bg-[#D71920] text-white':'bg-[#1a2333] text-gray-300')+'">'+x[1]+' ('+bn(cnt[x[0]])+')</button>').join('')+'</div>'+(V.length?V.map(c=>{const n=S.news.find(x=>x.id===c.nid);return '<div class="py-3 border-b border-gray-800 text-sm"><div class="flex justify-between gap-2"><b>'+esc(c.name)+'</b><span class="text-xs '+(c.ok?'text-teal-400':'text-amber-400')+'">'+(c.ok?'প্রকাশিত':'অপেক্ষমাণ')+'</span></div><p class="text-xs text-gray-500">'+fd(c.id,true)+' · খবর: '+(n?esc(n.t):'(মুছে ফেলা খবর)')+'</p><p class="text-gray-200 mt-1 whitespace-pre-wrap">'+esc(c.txt)+'</p><div class="text-xs mt-2 flex gap-4">'+(c.ok?'':'<button onclick="okCm('+c.id+')" class="text-teal-400 font-bold">✔ অনুমোদন</button>')+(n?'<a href="#n'+n.id+'" target="_blank" class="text-sky-400">খবর দেখুন</a>':'')+'<button onclick="delCm('+c.id+')" class="text-red-400">মুছুন</button></div></div>'}).join(''):'<p class="text-sm text-gray-500">কোনো মন্তব্য নেই</p>')+'</div>';
   }
-  if(t==='seo')h='<div class="'+box+' space-y-2"><p class="font-bold">সাইট সেটিংস & এসইও</p><input id="s-t" placeholder="সাইটের টাইটেল" value="'+esc(S.seo.title)+'" class="'+inp+'"><textarea id="s-d" rows="3" placeholder="মেটা বিবরণ" class="'+inp+'">'+esc(S.seo.desc)+'</textarea><input id="s-e" placeholder="সম্পাদক ও প্রকাশকের নাম" value="'+esc(S.seo.ed||'')+'" class="'+inp+'"><input id="s-p" placeholder="ফোন" value="'+esc(S.seo.phone)+'" class="'+inp+'"><input id="s-a" placeholder="ঠিকানা" value="'+esc(S.seo.addr)+'" class="'+inp+'"><button onclick="saveSeo()" class="'+btn+'">সেভ করুন</button></div>';
+  if(t==='seo')h='<div class="'+box+' space-y-2"><p class="font-bold">সাইট সেটিংস & এসইও</p><input id="s-t" placeholder="সাইটের টাইটেল" value="'+esc(S.seo.title)+'" class="'+inp+'"><textarea id="s-d" rows="3" placeholder="মেটা বিবরণ" class="'+inp+'">'+esc(S.seo.desc)+'</textarea><input id="s-m" placeholder="যোগাযোগের ইমেইল" value="'+esc(S.seo.mail||'')+'" class="'+inp+'"><input id="s-e" placeholder="সম্পাদক ও প্রকাশকের নাম" value="'+esc(S.seo.ed||'')+'" class="'+inp+'"><input id="s-p" placeholder="ফোন" value="'+esc(S.seo.phone)+'" class="'+inp+'"><input id="s-a" placeholder="ঠিকানা" value="'+esc(S.seo.addr)+'" class="'+inp+'"><button onclick="saveSeo()" class="'+btn+'">সেভ করুন</button></div>';
   $('tab').innerHTML=h;
 }
 function vidEmbed(u){
@@ -293,8 +330,9 @@ function saveTicker(){S.ticker=$('tk').value;save();alert('আপডেট হ�
 function saveAds(){S.ads={on:$('ad-on').checked,code:$('ad-code').value};save();alert('সেভ হয়েছে')}
 function addRep(e){e.preventDefault();S.rep.push({n:$('rp-n').value,r:$('rp-r').value});save();tab('rep')}
 function delRep(i){S.rep.splice(i,1);save();tab('rep')}
-function saveSeo(){S.seo={ed:$('s-e').value,title:$('s-t').value,desc:$('s-d').value,phone:$('s-p').value,addr:$('s-a').value};save();alert('সেভ হয়েছে')}
+function saveSeo(){S.seo={mail:$('s-m').value,ed:$('s-e').value,title:$('s-t').value,desc:$('s-d').value,phone:$('s-p').value,addr:$('s-a').value};save();alert('সেভ হয়েছে')}
 
+if(IMPFAIL){const ok=()=>Promise.resolve();doc=()=>({});getDoc=ok;setDoc=ok;updateDoc=ok;deleteDoc=ok;collection=()=>({});query=()=>({});where=()=>({});onSnapshot=()=>()=>{};signOut=ok;sendPasswordResetEmail=ok;signInWithEmailAndPassword=()=>Promise.reject();onAuthStateChanged=(a,cb)=>cb(null);window.dbErr='net'}
 if(DEMO){
   const ok=()=>Promise.resolve(),t=Date.now();
   S.news=[
@@ -305,7 +343,7 @@ if(DEMO){
     {id:5,t:'বাংলাদেশের অর্থনীতিতে নতুন সম্ভাবনা',c:'বাংলাদেশ',a:'নিজস্ব প্রতিবেদক',b:'বিশেষজ্ঞদের মতে আগামী বছরে প্রবৃদ্ধি বাড়তে পারে।',v:60,ts:t-18e6}
   ];
   S.ticker='ডেমো প্রিভিউ: এটি নমুনা ব্রেকিং নিউজ';loaded=true;IS_ADMIN=true;
-  $('demo').classList.remove('hidden');
+  $('demo').textContent='⚠ ডেমো প্রিভিউ — ডাটাবেস সংযুক্ত নয়, নমুনা খবর দেখানো হচ্ছে';$('demo').classList.remove('hidden');
   doc=()=>({});getDoc=ok;setDoc=ok;updateDoc=ok;deleteDoc=ok;collection=()=>({});query=()=>({});where=()=>({});
   onSnapshot=()=>()=>{};signOut=ok;sendPasswordResetEmail=ok;signInWithEmailAndPassword=()=>Promise.reject();
   onAuthStateChanged=(a,cb)=>cb({email:ADMIN_EMAIL});
@@ -314,10 +352,10 @@ Object.assign(window,{go,home,previewNews,cmFilter,search,sideTab,tapLogo,copyLi
 
 onSnapshot(doc(db,'site','state'),s=>{
   if(s.exists()){try{S=Object.assign(S,JSON.parse(s.data().json))}catch(e){}}
-  else if(IS_ADMIN&&!loaded){S.news=[];save()}
-  loaded=true;fix();
+  else if(IS_ADMIN&&!loaded){S.news=[];loaded=true;save()}
+  loaded=true;window.dbErr=0;fix();try{localStorage.setItem('saltha_cache',JSON.stringify(S))}catch(e){}
   if(!$('pub').classList.contains('hidden'))route();
-},e=>{const d=$('demo');d.textContent='⚠ ডাটা লোড হয়নি ('+(e.code||e.message)+')। Firebase নিয়ম বা নেট দেখুন।';d.classList.remove('hidden')});
+},e=>{window.dbErr=e.code||'err';if(IS_ADMIN){const d=$('demo');d.textContent='⚠ ডাটা লোড হয়নি ('+(e.code||e.message)+')। Firebase নিয়ম বা নেট দেখুন।';d.classList.remove('hidden')}else route()});
 onAuthStateChanged(auth,u=>{
   IS_ADMIN=!!u&&(u.email||'').toLowerCase()===ADMIN_EMAIL;
   $('adm-fab').classList.toggle('hidden',!IS_ADMIN);

@@ -12,7 +12,9 @@
 <meta property="og:description" content="সালথা ও ফরিদপুরের সর্বশেষ খবর, সবার আগে, নির্ভরযোগ্যভাবে।">
 <meta property="og:image" content="https://salthasangbad.github.io/og.jpg"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
 <meta property="og:url" content="https://salthasangbad.github.io/"><meta name="twitter:card" content="summary_large_image">
-<link href="https://fonts.googleapis.com/css2?family=Anek+Bangla:wght@800&family=Hind+Siliguri:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anek+Bangla:wght@800&text=%E0%A6%B8%E0%A6%BE%E0%A6%B2%E0%A6%A5%E0%A6%BE%20%E0%A6%B8%E0%A6%82%E0%A6%AC%E0%A6%BE%E0%A6%A6&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;700&display=swap" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com/3.4.17"></script>
 <style>
 body{font-family:'Hind Siliguri',sans-serif;background:#f4f5f7;color:#171717;margin:0}
@@ -100,9 +102,12 @@ body{font-family:'Hind Siliguri',sans-serif;background:#f4f5f7;color:#171717;mar
   <div id="tab" class="p-4 max-w-4xl mx-auto space-y-4"></div>
 </div>
 
+<script type="application/json" id="seed">{"gen":0,"news":[]}</script>
 <script>
 (function(){try{if(/^#(n\d+|about|contact|privacy|saltha-admin)$/.test(location.hash))return;
-var c=JSON.parse(localStorage.getItem('saltha_cache')||'null');if(!c||!c.news||!c.news.length)return;
+var c=null,sd=null;try{c=JSON.parse(localStorage.getItem('saltha_cache')||'null')}catch(x){}try{sd=JSON.parse(document.getElementById('seed').textContent)}catch(x){}
+if(!c||!c.news||!c.news.length||(sd&&sd.gen&&c._t<sd.gen))c=sd;
+if(!c||!c.news||!c.news.length)return;
 var n=c.news.slice().sort(function(a,b){return(b.ts||0)-(a.ts||0)||b.id-a.id}).slice(0,9),e=function(s){var d=document.createElement('div');d.textContent=s;return d.innerHTML};
 document.getElementById('hm').innerHTML='<div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">'+n.map(function(x){return '<a href="#n'+x.id+'" class="block"><span class="text-xs font-bold text-[#D71920]">'+e(x.c)+'</span><h3 class="font-bold text-lg leading-snug mt-1">'+e(x.t)+'</h3></a>'}).join('')+'</div>';
 document.getElementById('ticker').textContent=n.slice(0,3).map(function(x){return x.t}).join('   •   ');
@@ -111,22 +116,23 @@ document.getElementById('ticker').textContent=n.slice(0,3).map(function(x){retur
 <script type="module">
 const PREVIEW=!location.hostname||/claude|anthropic|localhost/.test(location.hostname);
 let IMPFAIL=false;
-let initializeApp,getAuth,signInWithEmailAndPassword,signOut,onAuthStateChanged,sendPasswordResetEmail,getFirestore,doc,getDoc,setDoc,updateDoc,deleteDoc,onSnapshot,collection,query,where,DEMO=false;
+let initializeApp,getAuth,signInWithEmailAndPassword,signOut,onAuthStateChanged,sendPasswordResetEmail,getFirestore,doc,getDoc,setDoc,updateDoc,deleteDoc,onSnapshot,collection,query,where,DEMO=false,WANT_AUTH=false;
+try{WANT_AUTH=!!localStorage.getItem('saltha_adm')}catch(e){}
 try{
   const B='https://www.gstatic.com/firebasejs/10.14.1/';
-  const [fa,fb,fc]=await Promise.all([import(B+'firebase-app.js'),import(B+'firebase-auth.js'),import(B+'firebase-firestore.js')]);
-  ({initializeApp}=fa);({getAuth,signInWithEmailAndPassword,signOut,onAuthStateChanged,sendPasswordResetEmail}=fb);({getFirestore,doc,getDoc,setDoc,updateDoc,deleteDoc,onSnapshot,collection,query,where}=fc);
+  const [fa,fc,fb]=await Promise.all([import(B+'firebase-app.js'),import(B+'firebase-firestore.js'),WANT_AUTH?import(B+'firebase-auth.js'):null]);
+  ({initializeApp}=fa);({getFirestore,doc,getDoc,setDoc,updateDoc,deleteDoc,onSnapshot,collection,query,where}=fc);if(fb){({getAuth,signInWithEmailAndPassword,signOut,onAuthStateChanged,sendPasswordResetEmail}=fb)}
 }catch(e){if(PREVIEW)DEMO=true;else IMPFAIL=true}
 
 const ADMIN_EMAIL='junayedahmad5003@gmail.com';
 const SHARE_BASE='';
-let auth,db;
+let auth,db;let authResolve;const authReady=new Promise(r=>authResolve=r);
 if(!DEMO&&!IMPFAIL){const app=initializeApp({
   apiKey:"AIzaSyABKCOjZnTu6155-eho8aqdGVkaxX1oVHw",
   authDomain:"saltha-sangbad.firebaseapp.com",
   projectId:"saltha-sangbad",
   appId:"1:91800137977:web:ba30064469389f181d3228"
-});auth=getAuth(app);db=getFirestore(app)}
+});auth=WANT_AUTH?getAuth(app):null;db=getFirestore(app)}
 
 const bn=n=>String(n).replace(/\d/g,d=>'০১২৩৪৫৬৭৮৯'[d]);
 const $=i=>document.getElementById(i);
@@ -134,7 +140,9 @@ const esc=s=>{const d=document.createElement('div');d.textContent=s;return d.inn
 const CATS=['সালথা','ফরিদপুর','বাংলাদেশ','রাজনীতি','কৃষি ও অর্থনীতি'];
 let S={ticker:'সালথা সংবাদে স্বাগতম',news:[]},CM=[],IS_ADMIN=false,cur=null,curCat='প্রচ্ছদ',unCm=null,loaded=false;
 function fix(){S.ads=S.ads||{on:true,code:''};S.rep=S.rep||[];S.seo=S.seo||{title:'',desc:'',phone:'',addr:''};S.news=S.news||[]}
-try{const c=JSON.parse(localStorage.getItem('saltha_cache')||'null');if(c&&c.news&&!DEMO)Object.assign(S,c)}catch(e){}
+if(!DEMO){let c=null,sd=null;try{c=JSON.parse(localStorage.getItem('saltha_cache')||'null')}catch(e){}try{sd=JSON.parse($('seed').textContent)}catch(e){}
+  if(!c||!c.news||!c.news.length||(sd&&sd.gen&&c._t<sd.gen))c=sd;
+  if(c&&c.news&&c.news.length){delete c._t;delete c.gen;Object.assign(S,c)}}
 fix();
 $('dt').textContent=new Date().toLocaleDateString('bn-BD',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
 
@@ -143,7 +151,10 @@ function save(){
   setDoc(doc(db,'site','state'),{json:JSON.stringify(S)}).catch(()=>alert('সেভ করা যায়নি'));
 }
 function go(v){['pub','login','admin'].forEach(x=>$(x).classList.toggle('hidden',x!==v));window.scrollTo(0,0);if(v==='admin')tab('dash')}
-function openAdmin(){IS_ADMIN?go('admin'):go('login')}
+async function openAdmin(){
+  if(!auth){if(window.name==='sal_rl'){window.name='';return}window.name='sal_rl';try{localStorage.setItem('saltha_adm','1')}catch(e){}history.replaceState(null,'',location.pathname+'#saltha-admin');location.reload();return}
+  window.name='';await authReady;IS_ADMIN?go('admin'):go('login');
+}
 const MN=['জানুয়ারি','ফেব্রুয়ারি','মার্চ','এপ্রিল','মে','জুন','জুলাই','আগস্ট','সেপ্টেম্বর','অক্টোবর','নভেম্বর','ডিসেম্বর'],DN=['রবিবার','সোমবার','মঙ্গলবার','বুধবার','বৃহস্পতিবার','শুক্রবার','শনিবার'];
 function fd(ts,full){if(!ts)return '';const d=new Date(ts);let h=d.getHours();const m=String(d.getMinutes()).padStart(2,'0'),ap=h<12?'পূর্বাহ্ণ':'অপরাহ্ণ';h=h%12||12;return (full?DN[d.getDay()]+', ':'')+bn(d.getDate())+' '+MN[d.getMonth()]+', '+bn(d.getFullYear())+(full?', '+bn(h)+':'+bn(m)+' '+ap:'')}
 const thumb=n=>n.im?'<img data-im="'+n.im+'" class="w-full h-full object-cover bg-gray-200">':(n.i&&/^https:\/\//.test(n.i)?'<img src="'+esc(n.i)+'" loading="lazy" class="w-full h-full object-cover">':'');
@@ -272,7 +283,7 @@ function resetPw(mail){
   mail=(mail||ADMIN_EMAIL).trim();
   sendPasswordResetEmail(auth,mail).then(()=>alert('পাসওয়ার্ড বদলানোর লিংক ইমেইলে পাঠানো হয়েছে (স্প্যাম ফোল্ডারও দেখুন)')).catch(()=>alert('ইমেইল পাঠানো যায়নি'));
 }
-function logout(){signOut(auth).then(()=>go('pub'))}
+function logout(){try{localStorage.removeItem('saltha_adm')}catch(e){}signOut(auth).then(()=>go('pub'))}
 
 const TABS=[['dash','📊 ড্যাশবোর্ড'],['news','📰 সংবাদ'],['breaking','🔥 ব্রেকিং'],['cats','🗂 বিভাগ'],['ads','📈 বিজ্ঞাপন'],['rep','👥 রিপোর্টার'],['cm','💬 মন্তব্য'],['seo','⚙️ সেটিংস/SEO']];
 function tab(t){
@@ -284,6 +295,7 @@ function tab(t){
     const tv=S.news.reduce((s,n)=>s+n.v,0),mx=Math.max(1,...S.news.map(n=>n.v));
     h='<div class="grid grid-cols-2 gap-3"><div class="'+box+'"><p class="text-xs text-gray-400">মোট সংবাদ</p><p class="text-3xl font-black">'+bn(S.news.length)+'</p></div><div class="'+box+'"><p class="text-xs text-gray-400">সর্বমোট ভিউ</p><p class="text-3xl font-black text-teal-400">'+bn(tv)+'</p></div></div><div class="'+box+'"><p class="font-bold mb-3">খবর অনুযায়ী ভিউ</p>'+S.news.map(n=>'<div class="mb-2 text-xs"><div class="flex justify-between"><span class="truncate pr-2">'+esc(n.t)+'</span><span>'+bn(n.v)+'</span></div><div class="h-2 bg-gray-800 rounded"><div class="h-2 bg-[#D71920] rounded" style="width:'+Math.round(n.v/mx*100)+'%"></div></div></div>').join('')+'</div>';
   }
+  if(t==='dash')h+='<div class="'+box+' space-y-2"><p class="font-bold">⚡ সাইট দ্রুত করার টুল</p><p class="text-xs text-gray-400 leading-relaxed">নতুন খবর দেওয়ার পর স্ন্যাপশট ডাউনলোড করে GitHub-এ index.html বদলে দিলে প্রথমবার আসা পাঠকের কাছেও সাইট সাথে সাথে খুলবে। না করলেও সাইট ঠিক চলবে, নতুন খবর সব সময় ডাটাবেস থেকেই আসে।</p><button onclick="makeSnap()" class="'+btn+'">📦 হোমপেজ স্ন্যাপশট (index.html ডাউনলোড)</button><button onclick="shrinkOld()" class="'+btn.replace('bg-[#D71920]','bg-[#123B63]')+'">🗜 পুরনো ছবি ছোট করুন (২০০KB)</button></div>';
   if(t==='news'){
     h='<form onsubmit="addNews(event)" class="'+box+' space-y-2"><p class="font-bold">+ নতুন সংবাদ</p><input id="n-t" required placeholder="শিরোনাম" class="'+inp+'"><select id="n-c" class="'+inp+'">'+CATS.map(c=>'<option>'+c+'</option>').join('')+'</select><input id="n-a" placeholder="লেখকের নাম" value="সালথা (ফরিদপুর) প্রতিনিধি" class="'+inp+'"><p class="text-xs text-gray-400">ছবি (ফোন থেকে বেছে নিন, ঐচ্ছিক)</p><input id="n-f" type="file" accept="image/*" class="'+inp+'"><input id="n-i" placeholder="অথবা ছবির লিংক (ঐচ্ছিক)" class="'+inp+'"><input id="n-vd" placeholder="ভিডিও লিংক (YouTube বা Facebook, ঐচ্ছিক)" class="'+inp+'"><textarea id="n-b" required rows="5" placeholder="পূর্ণ খবর" class="'+inp+'"></textarea><button type="button" onclick="previewNews()" class="'+btn.replace('bg-[#D71920]','bg-[#123B63]')+'">👁 প্রকাশের আগে প্রিভিউ দেখুন</button><button class="'+btn+'">প্রকাশ করুন</button></form><div class="'+box+'"><p class="font-bold mb-2">সব সংবাদ</p>'+S.news.map(n=>'<div class="flex justify-between items-center py-2 border-b border-gray-800 text-sm"><span class="pr-2">'+esc(n.t)+'<br><span class="text-xs text-gray-500">'+esc(n.c)+' · '+bn(n.v)+' ভিউ</span></span><span class="shrink-0"><a href="#n'+n.id+'" target="_blank" class="text-sky-400 text-xs mr-3">দেখুন</a><button onclick="delNews('+n.id+')" class="text-red-400 text-xs">মুছুন</button></span></div>').join('')+'</div>';
   }
@@ -306,8 +318,30 @@ function vidEmbed(u){
   return '';
 }
 const IMG={};
-function fillImgs(){document.querySelectorAll('img[data-im]').forEach(el=>{const id=el.dataset.im;if(IMG[id]){el.src=IMG[id];return}getDoc(doc(db,'images',id)).then(x=>{if(x.exists()){IMG[id]=x.data().d;el.src=IMG[id]}}).catch(()=>{})})}
-function compress(file){return new Promise((res,rej)=>{const im=new Image(),u=URL.createObjectURL(file);im.onload=()=>{const r=Math.min(1,900/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=Math.round(im.width*r);c.height=Math.round(im.height*r);c.getContext('2d').drawImage(im,0,0,c.width,c.height);URL.revokeObjectURL(u);let q=.8,d=c.toDataURL('image/jpeg',q);while(d.length>700000&&q>.4){q-=.1;d=c.toDataURL('image/jpeg',q)}res(d)};im.onerror=rej;im.src=u})}
+const io=typeof IntersectionObserver!=='undefined'?new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){io.unobserve(e.target);loadImg(e.target)}}),{rootMargin:'300px'}):null;
+function loadImg(el){const id=el.dataset.im;if(!id)return;if(IMG[id]){el.src=IMG[id];return}getDoc(doc(db,'images',id)).then(x=>{if(x.exists()){IMG[id]=x.data().d;el.src=IMG[id]}}).catch(()=>{})}
+function fillImgs(){document.querySelectorAll('img[data-im]').forEach(el=>{if(el.getAttribute('src'))return;if(IMG[el.dataset.im]||!io)loadImg(el);else io.observe(el)})}
+const MAXB=200*1024;
+function shrink(src){return new Promise((res,rej)=>{const im=new Image();im.onload=()=>{let w=Math.min(1,800/Math.max(im.width,im.height)),d='';
+  for(let k=0;k<6;k++){const c=document.createElement('canvas');c.width=Math.max(1,Math.round(im.width*w));c.height=Math.max(1,Math.round(im.height*w));c.getContext('2d').drawImage(im,0,0,c.width,c.height);
+    for(let q=.8;q>=.39;q-=.1){d=c.toDataURL('image/jpeg',q);if((d.length-23)*.75<=MAXB){res(d);return}}
+    w*=.8}
+  res(d)};im.onerror=rej;im.src=src})}
+function compress(file){const u=URL.createObjectURL(file);return shrink(u).finally(()=>URL.revokeObjectURL(u))}
+async function shrinkOld(){
+  let done=0,saved=0;
+  for(const n of S.news.filter(n=>n.im)){try{const x=await getDoc(doc(db,'images',n.im));if(!x.exists())continue;const d=x.data().d;if((d.length-23)*.75<=MAXB)continue;const nd=await shrink(d);await setDoc(doc(db,'images',n.im),{d:nd});IMG[n.im]=nd;done++;saved+=Math.round((d.length-nd.length)*.75/1024)}catch(e){}}
+  alert(done?bn(done)+'টি ছবি ছোট করা হয়েছে (প্রায় '+bn(saved)+' KB কম)':'কোনো ছবি ২০০KB-এর বেশি নেই');
+}
+async function makeSnap(){
+  try{
+    const r=await fetch(location.pathname+'?v='+Date.now());let h=await r.text();
+    const top=latest().slice(0,8).map(n=>({id:n.id,t:n.t,c:n.c,a:n.a,b:(n.b||'').slice(0,3000),v:n.v,ts:n.ts,im:n.im,i:n.i,vd:n.vd}));
+    const j=JSON.stringify({gen:Date.now(),news:top}).replace(/</g,'\\u003c');
+    h=h.replace(/<script type="application\/json" id="seed">[\s\S]*?<\/script>/,()=>'<script type="application/json" id="seed">'+j+'<\/script>');
+    const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([h],{type:'text/html'}));a.download='index.html';document.body.appendChild(a);a.click();a.remove();
+  }catch(e){alert('স্ন্যাপশট তৈরি করা যায়নি')}
+}
 async function addNews(e){
   e.preventDefault();
   const b=e.target.querySelector('button'),old=b.textContent;b.disabled=true;b.textContent='প্রকাশ হচ্ছে...';
@@ -332,6 +366,7 @@ function addRep(e){e.preventDefault();S.rep.push({n:$('rp-n').value,r:$('rp-r').
 function delRep(i){S.rep.splice(i,1);save();tab('rep')}
 function saveSeo(){S.seo={mail:$('s-m').value,ed:$('s-e').value,title:$('s-t').value,desc:$('s-d').value,phone:$('s-p').value,addr:$('s-a').value};save();alert('সেভ হয়েছে')}
 
+if(IMPFAIL||DEMO)auth={};
 if(IMPFAIL){const ok=()=>Promise.resolve();doc=()=>({});getDoc=ok;setDoc=ok;updateDoc=ok;deleteDoc=ok;collection=()=>({});query=()=>({});where=()=>({});onSnapshot=()=>()=>{};signOut=ok;sendPasswordResetEmail=ok;signInWithEmailAndPassword=()=>Promise.reject();onAuthStateChanged=(a,cb)=>cb(null);window.dbErr='net'}
 if(DEMO){
   const ok=()=>Promise.resolve(),t=Date.now();
@@ -348,20 +383,21 @@ if(DEMO){
   onSnapshot=()=>()=>{};signOut=ok;sendPasswordResetEmail=ok;signInWithEmailAndPassword=()=>Promise.reject();
   onAuthStateChanged=(a,cb)=>cb({email:ADMIN_EMAIL});
 }
-Object.assign(window,{go,home,previewNews,cmFilter,search,sideTab,tapLogo,copyLink,doLogin,resetPw,logout,tab,addNews,delNews,saveTicker,saveAds,addRep,delRep,saveSeo,addCm,okCm,delCm,openAdmin});
+Object.assign(window,{go,home,makeSnap,shrinkOld,previewNews,cmFilter,search,sideTab,tapLogo,copyLink,doLogin,resetPw,logout,tab,addNews,delNews,saveTicker,saveAds,addRep,delRep,saveSeo,addCm,okCm,delCm,openAdmin});
 
 onSnapshot(doc(db,'site','state'),s=>{
   if(s.exists()){try{S=Object.assign(S,JSON.parse(s.data().json))}catch(e){}}
   else if(IS_ADMIN&&!loaded){S.news=[];loaded=true;save()}
-  loaded=true;window.dbErr=0;fix();try{localStorage.setItem('saltha_cache',JSON.stringify(S))}catch(e){}
+  loaded=true;window.dbErr=0;fix();try{localStorage.setItem('saltha_cache',JSON.stringify(Object.assign({_t:Date.now()},S)))}catch(e){}
   if(!$('pub').classList.contains('hidden'))route();
 },e=>{window.dbErr=e.code||'err';if(IS_ADMIN){const d=$('demo');d.textContent='⚠ ডাটা লোড হয়নি ('+(e.code||e.message)+')। Firebase নিয়ম বা নেট দেখুন।';d.classList.remove('hidden')}else route()});
-onAuthStateChanged(auth,u=>{
+const onAuth=u=>{
   IS_ADMIN=!!u&&(u.email||'').toLowerCase()===ADMIN_EMAIL;
   $('adm-fab').classList.toggle('hidden',!IS_ADMIN);
   if(!IS_ADMIN&&!$('admin').classList.contains('hidden'))go('pub');
   watchCm();
-});
+};
+if(auth)onAuthStateChanged(auth,u=>{authResolve();onAuth(u)});else{authResolve();onAuth(null)}
 route();
 </script>
 </body>

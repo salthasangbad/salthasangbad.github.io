@@ -34,8 +34,8 @@ body{font-family:'Hind Siliguri',sans-serif;background:#f4f5f7;color:#171717;mar
 <div id="pub">
   <div id="demo" class="hidden bg-yellow-100 text-yellow-900 text-xs text-center py-1"></div>
   <div class="bg-white border-b text-xs px-4 py-2 flex justify-between items-center text-gray-600">
-    <span>📅 <span id="dt"></span> | <b class="text-[#123B63]">ফরিদপুর জেলা সংস্করণ</b></span>
-    <input id="q" oninput="search(this.value)" placeholder="🔍 খুঁজুন" class="border rounded-full px-3 py-1 w-32 text-xs">
+    <span><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline;vertical-align:-2px"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg> <span id="dt"></span> | <b class="text-[#123B63]">ফরিদপুর জেলা সংস্করণ</b></span>
+    <input id="q" oninput="search(this.value)" placeholder="খুঁজুন..." class="border rounded-full px-3 py-1 w-32 text-xs">
   </div>
   <header class="bg-white py-4 text-center border-b">
     <a href="#" onclick="home();return false" class="inline-block">
@@ -45,7 +45,7 @@ body{font-family:'Hind Siliguri',sans-serif;background:#f4f5f7;color:#171717;mar
   </header>
   <nav class="bg-[#123B63] text-white sticky top-0 z-30 shadow"><div id="cats" class="max-w-6xl mx-auto flex gap-1 overflow-x-auto no-sb px-3 py-1 text-sm font-semibold"></div></nav>
   <div class="bg-[#171717] text-white flex items-center h-10 px-3 text-sm">
-    <span class="bg-[#D71920] px-2 py-1 text-xs font-bold shrink-0 z-10">🔥 ব্রেকিং</span>
+    <span class="bg-[#D71920] px-2 py-1 text-xs font-bold shrink-0 z-10"><svg width="12" height="12" viewBox="0 0 24 24" fill="#fff" style="display:inline;vertical-align:-1px"><path d="M12 2c1 4-4 5.5-4 9a4.5 4.5 0 0 0 9 0c0-1.5-1-2.5-1-2.5s2.5 1.2 2.5 4A6.5 6.5 0 0 1 5.5 11C5.5 6.5 10.5 5.5 12 2z"/></svg> ব্রেকিং</span>
     <div class="flex-1 overflow-hidden"><span id="ticker" class="mq font-semibold"></span></div>
   </div>
   <div id="adtop" class="max-w-6xl mx-auto px-4 mt-3"></div>
@@ -81,31 +81,16 @@ body{font-family:'Hind Siliguri',sans-serif;background:#f4f5f7;color:#171717;mar
     <p class="mt-4 flex justify-center gap-5 text-gray-300 text-sm"><a href="#about">সম্পর্কে</a><a href="#contact">যোগাযোগ</a><a href="#privacy">প্রাইভেসি পলিসি</a></p>
     <p id="fed" class="mt-3"></p><p id="ft" class="mt-1"></p>
   </footer>
-  <button id="adm-fab" onclick="go('admin')" class="hidden fixed bottom-4 right-4 z-40 bg-[#123B63] text-white px-4 py-2 rounded-full shadow-lg text-sm font-bold">⚙️ প্যানেল</button>
+  <button id="adm-fab" onclick="go('admin')" class="hidden fixed bottom-4 right-4 z-40 bg-[#123B63] text-white px-4 py-2 rounded-full shadow-lg text-sm font-bold"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline;vertical-align:-2px"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg> প্যানেল</button>
 </div>
 
-<div id="login" class="hidden min-h-screen bg-[#0b0f19] flex items-center justify-center p-4">
-  <form onsubmit="doLogin(event)" class="bg-[#111827] border border-gray-800 rounded-3xl w-full max-w-md p-7 space-y-4 text-sm text-white">
-    <div class="text-center">
-      <div class="mh text-3xl"><span class="text-[#D71920]">সালথা</span> সংবাদ</div>
-      <p class="text-xs text-gray-400 mt-1">সুরক্ষিত অ্যাডমিন কন্ট্রোল প্যানেল</p>
-    </div>
-    <p id="err" class="hidden bg-red-950 border border-red-500/50 text-red-200 p-2 rounded-xl text-xs"></p>
-    <div><label class="text-xs text-gray-300">ইমেইল</label>
-      <input id="em" type="email" required class="w-full mt-1 px-3 py-2 bg-[#1a2333] border border-gray-700 rounded-xl"></div>
-    <div><label class="text-xs text-gray-300">পাসওয়ার্ড</label>
-      <input id="pw" type="password" required class="w-full mt-1 px-3 py-2 bg-[#1a2333] border border-gray-700 rounded-xl"></div>
-    <button class="w-full py-3 bg-[#D71920] rounded-xl font-bold">প্রবেশ করুন</button>
-    <button type="button" onclick="resetPw(document.getElementById('em').value)" class="w-full text-xs text-amber-400">পাসওয়ার্ড ভুলে গেছেন / বদলাতে চান?</button>
-    <button type="button" onclick="go('pub')" class="w-full text-xs text-gray-400">← মূল ওয়েবসাইটে ফিরুন</button>
-  </form>
-</div>
+<div id="login" class="hidden"></div>>
 
 <div id="admin" class="hidden min-h-screen bg-[#0b0f19] text-gray-100">
   <header class="bg-[#111827] border-b border-gray-800 px-4 py-3 flex justify-between items-center sticky top-0 z-30">
     <b class="mh text-lg">সালথা সংবাদ <span class="text-[10px] text-red-400 border border-red-500/40 px-1.5 rounded">ADMIN</span></b>
     <div class="flex gap-2 text-xs">
-      <button onclick="resetPw()" class="bg-gray-800 px-3 py-1.5 rounded-lg">🔑 পাসওয়ার্ড</button>
+      <button onclick="resetPw()" class="bg-gray-800 px-3 py-1.5 rounded-lg"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline;vertical-align:-2px"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg> পাসওয়ার্ড</button>
       <button onclick="go('pub')" class="bg-gray-800 px-3 py-1.5 rounded-lg">🌐 সাইট</button>
       <button onclick="logout()" class="bg-gray-800 px-3 py-1.5 rounded-lg">লগআউট</button>
     </div>
@@ -116,7 +101,7 @@ body{font-family:'Hind Siliguri',sans-serif;background:#f4f5f7;color:#171717;mar
 
 <script type="application/json" id="seed">{"gen":0,"news":[]}</script>
 <script>
-(function(){try{if(/^#(n\d+|about|contact|privacy|saltha-admin)$/.test(location.hash))return;
+(function(){try{if(location.hash==='#saltha-admin'){location.replace('admin.html');return}if(/^#(n\d+|about|contact|privacy)$/.test(location.hash))return;
 var c=null,sd=null;try{c=JSON.parse(localStorage.getItem('saltha_cache')||'null')}catch(x){}try{sd=JSON.parse(document.getElementById('seed').textContent)}catch(x){}
 if(!c||!c.news||!c.news.length||(sd&&sd.gen&&c._t<sd.gen))c=sd;
 if(!c||!c.news||!c.news.length)return;
@@ -313,7 +298,7 @@ function resetPw(mail){
 }
 function logout(){try{localStorage.removeItem('saltha_adm')}catch(e){}signOut(auth).then(()=>go('pub'))}
 
-const TABS=[['dash','📊 ড্যাশবোর্ড'],['news','📰 সংবাদ'],['breaking','🔥 ব্রেকিং'],['cats','🗂 বিভাগ'],['ads','📈 বিজ্ঞাপন'],['rep','👥 রিপোর্টার'],['cm','💬 মন্তব্য'],['seo','⚙️ সেটিংস/SEO']];
+const TABS=[['dash','ড্যাশবোর্ড'],['news','সংবাদ'],['breaking','ব্রেকিং'],['cats','বিভাগ'],['ads','বিজ্ঞাপন'],['rep','রিপোর্টার'],['cm','মন্তব্য'],['seo','সেটিংস/SEO']];
 function tab(t){
   $('tab').dataset.t=t;
   $('tabs').innerHTML=TABS.map(x=>'<button onclick="tab(\''+x[0]+'\')" class="px-3 py-2 rounded-xl whitespace-nowrap '+(x[0]===t?'bg-[#D71920] text-white':'bg-[#111827] text-gray-400')+'">'+x[1]+(x[0]==='cm'&&CM.some(c=>!c.ok)?' ('+bn(CM.filter(c=>!c.ok).length)+')':'')+'</button>').join('');

@@ -158,9 +158,24 @@ if(!DEMO){let c=null,sd=null;try{c=JSON.parse(localStorage.getItem('saltha_cache
 fix();
 $('dt').textContent=new Date().toLocaleDateString('bn-BD',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
 
+let delIdsV1=new Set();
 function save(){
   if(!IS_ADMIN||!loaded)return;
-  setDoc(doc(db,'site','state'),{json:JSON.stringify(S)}).catch(()=>alert('সেভ করা যায়নি'));
+  // SAVE_GUARD_V1: সেভের আগে সার্ভারের আসল তালিকা পড়ে মিলিয়ে নেওয়া হয় —
+  // লোডে না-আসা কোনো খবর যেন ভুলে মুছে না যায়।
+  getDoc(doc(db,'site','state')).then(snap=>{
+    if(snap.exists()){
+      try{
+        const srv=JSON.parse(snap.data().json);
+        if(srv&&Array.isArray(srv.news)){
+          const have=new Set((S.news||[]).map(n=>n.id));
+          const extra=srv.news.filter(n=>!have.has(n.id)&&!delIdsV1.has(n.id));
+          if(extra.length)S=Object.assign({},S,{news:S.news.concat(extra)});
+        }
+      }catch(e){}
+    }
+    setDoc(doc(db,'site','state'),{json:JSON.stringify(S)}).catch(()=>alert('সেভ করা যায়নি'));
+  }).catch(()=>alert('সেভ করা যায়নি'));
 }
 function go(v){['pub','login','admin'].forEach(x=>$(x).classList.toggle('hidden',x!==v));window.scrollTo(0,0);if(v==='admin')tab('dash')}
 async function openAdmin(){
@@ -364,7 +379,7 @@ async function addNews(e){
     S.news.unshift(item);save();tab('news');
   }catch(x){alert('ছবি আপলোড করা যায়নি, আবার চেষ্টা করুন');b.disabled=false;b.textContent=old}
 }
-function delNews(id){if(!confirm('এই খবর মুছবেন?'))return;const o=S.news.find(n=>n.id===id);if(o&&o.im)deleteDoc(doc(db,'images',o.im)).catch(()=>{});S.news=S.news.filter(n=>n.id!==id);save();tab('news')}
+function delNews(id){if(!confirm('এই খবর মুছবেন?'))return;delIdsV1.add(id);const o=S.news.find(n=>n.id===id);if(o&&o.im)deleteDoc(doc(db,'images',o.im)).catch(()=>{});S.news=S.news.filter(n=>n.id!==id);save();tab('news')}
 function cmFilter(k){window.cmf=k;tab('cm')}
 function previewNews(){
   const t=$('n-t').value.trim(),b=$('n-b').value.trim();if(!t||!b){alert('শিরোনাম ও খবর লিখুন');return}
